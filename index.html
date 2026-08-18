@@ -222,10 +222,107 @@ function FloorplanView(){
   return React.createElement("div",{style:{padding:"24px"}},
     React.createElement("div",{style:{textAlign:"center",marginBottom:20}},
       React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},"Seating Plan"),
-      React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
+      React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}}),
+      React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"55",marginTop:8}},"Pinch to zoom or double-tap")
     ),
-    React.createElement("div",{style:{maxWidth:480,margin:"0 auto",border:"1px solid #e0ebe3"}},
-      React.createElement("img",{src:FP_IMG,alt:"Venue floor plan and seating chart",style:{width:"100%",display:"block"}}))
+    React.createElement(ZoomableImage,{src:FP_IMG,alt:"Venue floor plan and seating chart"})
+  );
+}
+
+function ZoomableImage(props){
+  var containerRef=React.useRef(null);
+  var imgRef=React.useRef(null);
+  var stateRef=React.useRef({scale:1,x:0,y:0,startDist:0,startScale:1,startX:0,startY:0,lastTap:0,isPinching:false,isDragging:false,dragStartX:0,dragStartY:0,dragOffsetX:0,dragOffsetY:0});
+
+  function getDistance(t1,t2){
+    var dx=t1.clientX-t2.clientX;
+    var dy=t1.clientY-t2.clientY;
+    return Math.sqrt(dx*dx+dy*dy);
+  }
+
+  function applyTransform(){
+    var s=stateRef.current;
+    if(imgRef.current){
+      imgRef.current.style.transform="translate("+s.x+"px,"+s.y+"px) scale("+s.scale+")";
+    }
+  }
+
+  function clampPosition(){
+    var s=stateRef.current;
+    if(s.scale<=1){s.x=0;s.y=0;return;}
+    var container=containerRef.current;
+    if(!container)return;
+    var w=container.offsetWidth;
+    var h=container.offsetHeight;
+    var maxX=(w*s.scale-w)/2;
+    var maxY=(h*s.scale-h)/2;
+    s.x=Math.max(-maxX,Math.min(maxX,s.x));
+    s.y=Math.max(-maxY,Math.min(maxY,s.y));
+  }
+
+  function onTouchStart(e){
+    var s=stateRef.current;
+    if(e.touches.length===2){
+      e.preventDefault();
+      s.isPinching=true;
+      s.isDragging=false;
+      s.startDist=getDistance(e.touches[0],e.touches[1]);
+      s.startScale=s.scale;
+    }else if(e.touches.length===1&&s.scale>1){
+      s.isDragging=true;
+      s.isPinching=false;
+      s.dragStartX=e.touches[0].clientX;
+      s.dragStartY=e.touches[0].clientY;
+      s.dragOffsetX=s.x;
+      s.dragOffsetY=s.y;
+    }
+    var now=Date.now();
+    if(e.touches.length===1&&now-s.lastTap<300){
+      e.preventDefault();
+      if(s.scale>1){s.scale=1;s.x=0;s.y=0;}
+      else{s.scale=2.5;s.x=0;s.y=0;}
+      applyTransform();
+    }
+    s.lastTap=now;
+  }
+
+  function onTouchMove(e){
+    var s=stateRef.current;
+    if(s.isPinching&&e.touches.length===2){
+      e.preventDefault();
+      var dist=getDistance(e.touches[0],e.touches[1]);
+      s.scale=Math.max(1,Math.min(5,s.startScale*(dist/s.startDist)));
+      clampPosition();
+      applyTransform();
+    }else if(s.isDragging&&e.touches.length===1&&s.scale>1){
+      e.preventDefault();
+      s.x=s.dragOffsetX+(e.touches[0].clientX-s.dragStartX);
+      s.y=s.dragOffsetY+(e.touches[0].clientY-s.dragStartY);
+      clampPosition();
+      applyTransform();
+    }
+  }
+
+  function onTouchEnd(e){
+    var s=stateRef.current;
+    s.isPinching=false;
+    if(e.touches.length===0)s.isDragging=false;
+    if(s.scale<=1){s.scale=1;s.x=0;s.y=0;applyTransform();}
+  }
+
+  return React.createElement("div",{
+    ref:containerRef,
+    onTouchStart:onTouchStart,
+    onTouchMove:onTouchMove,
+    onTouchEnd:onTouchEnd,
+    style:{maxWidth:480,margin:"0 auto",border:"1px solid #e0ebe3",overflow:"hidden",touchAction:"pan-x pan-y"}
+  },
+    React.createElement("img",{
+      ref:imgRef,
+      src:props.src,
+      alt:props.alt,
+      style:{width:"100%",display:"block",transformOrigin:"center center",transition:"transform 0.1s ease-out"}
+    })
   );
 }
 
