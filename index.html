@@ -131,7 +131,7 @@ function SeatSearch(){
 
 /* ── MENU ── */
 function MenuView(){
-  const courses=[
+  var courses=[
     {name:"ENTR\u00c9E",items:[
       {name:"Borrowdale Pork Belly",desc:"roasted apple ketchup, fioretto [df, gf]"},
     ]},
@@ -144,16 +144,26 @@ function MenuView(){
   ];
   return React.createElement("div",{style:{padding:"24px",maxWidth:420,margin:"0 auto"}},
     React.createElement("div",{style:{textAlign:"center",marginBottom:28}},
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},"Cocktail Hour"),
+      React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
+    ),
+    React.createElement("div",{style:{marginBottom:32,textAlign:"center"}},
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:12,fontWeight:600}},"CANAP\u00c9S"),
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:18,fontWeight:500,color:S.primary,marginBottom:2}},"Chef\u2019s Selection"),
+      React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",fontStyle:"italic"}},"of three (3) canap\u00e9s")
+    ),
+    React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"0 auto 28px",opacity:0.25}}),
+    React.createElement("div",{style:{textAlign:"center",marginBottom:28}},
       React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},"Dinner Menu"),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
     ),
-    courses.map((c,ci)=>React.createElement("div",{key:ci,style:{marginBottom:28,textAlign:"center"}},
-      React.createElement("div",{style:{...S.spaced,fontSize:10,color:S.sage,marginBottom:14,fontWeight:600}},c.name),
-      c.items.map((item,ii)=>React.createElement("div",{key:ii,style:{marginBottom:14}},
+    courses.map(function(c,ci){return React.createElement("div",{key:ci,style:{marginBottom:28,textAlign:"center"}},
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:14,fontWeight:600}},c.name),
+      c.items.map(function(item,ii){return React.createElement("div",{key:ii,style:{marginBottom:14}},
         React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:18,fontWeight:500,color:S.primary,marginBottom:2}},item.name),
-        React.createElement("div",{style:{...S.sans,fontSize:12,color:S.text+"77",fontStyle:"italic"}},item.desc)
-      ))
-    ))
+        React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",fontStyle:"italic"}},item.desc)
+      )})
+    )})
   );
 }
 
