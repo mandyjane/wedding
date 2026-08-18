@@ -403,6 +403,10 @@ function App(){
   function showOnPlan(guest){
     setHighlightGuest(guest);
     setTab("seatingplan");
+    setTimeout(function(){
+      var el=document.getElementById("seating-plan-section");
+      if(el)el.scrollIntoView({behavior:"smooth",block:"start"});
+    },100);
   }
 
   const tabs=[
@@ -448,7 +452,7 @@ function App(){
       tab==="menu"&&React.createElement(MenuView),
       tab==="beverages"&&React.createElement(BeveragesView),
       tab==="timeline"&&React.createElement(TimelineView),
-      tab==="seatingplan"&&React.createElement(FloorplanView,{highlightGuest:highlightGuest}),
+      tab==="seatingplan"&&React.createElement("div",{id:"seating-plan-section"},React.createElement(FloorplanView,{highlightGuest:highlightGuest})),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"8px auto 20px",opacity:0.35}}),
       React.createElement("div",{style:{textAlign:"center",paddingBottom:40}},
         React.createElement("img",{src:BOT_IMG,alt:"Liam and Amanda — 14 October 2026",
