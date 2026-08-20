@@ -458,8 +458,11 @@ function sbTrackDownload(photoName){
       method:"POST",
       headers:Object.assign({"Content-Type":"application/octet-stream","x-upsert":"true"},sbHeaders()),
       body:jsonStr
+    }).then(function(r){
+      if(!r.ok){r.text().then(function(t){console.error("Track download failed:",r.status,t);});}
+      else{console.log("Download tracked:",photoName,counts[photoName]);}
     });
-  }).catch(function(){});
+  }).catch(function(e){console.error("Track download error:",e);});
 }
 
 function sbLoadConfig(){
