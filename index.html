@@ -427,11 +427,10 @@ function sbListPhotos(){
 }
 
 function sbDeletePhoto(name){
-  return fetch(SB_URL+"/storage/v1/object/"+SB_BUCKET,{
+  return fetch(SB_URL+"/storage/v1/object/"+SB_BUCKET+"/"+name,{
     method:"DELETE",
-    headers:Object.assign({"Content-Type":"application/json"},sbHeaders()),
-    body:JSON.stringify({prefixes:[name]})
-  });
+    headers:Object.assign({"Content-Type":"application/json"},sbHeaders())
+  }).then(function(r){if(!r.ok){return r.text().then(function(t){console.error("Delete error:",t);throw new Error(t);});}return r;});
 }
 
 /* ── SUPABASE CONFIG SYNC ── */
@@ -451,6 +450,28 @@ function sbSaveConfig(data){
   });
 }
 
+/* ── SLIDE PHOTO ── */
+function SlidePhoto(props){
+  var ref=React.useRef(null);
+  var dir=props.dir||"left";
+  useEffect(function(){
+    var el=ref.current;if(!el)return;
+    el.style.transition="none";
+    el.style.transform="translateX("+(dir==="left"?"60":"- 60")+"px)";
+    el.style.opacity="0";
+    requestAnimationFrame(function(){
+      el.style.transition="transform 0.25s ease-out, opacity 0.25s ease-out";
+      el.style.transform="translateX(0)";
+      el.style.opacity="1";
+    });
+  },[props.photo.name]);
+  var isVideo=/\.(mp4|mov|webm|avi)$/i.test(props.photo.name);
+  return React.createElement("div",{ref:ref,onClick:function(e){e.stopPropagation();},style:{maxWidth:"85%",maxHeight:"80vh"}},
+    isVideo?React.createElement("video",{src:props.photo.url,controls:true,autoPlay:true,style:{maxWidth:"100%",maxHeight:"80vh"}}):
+    React.createElement("img",{src:props.photo.url,alt:"Wedding photo",style:{maxWidth:"100%",maxHeight:"80vh",objectFit:"contain",display:"block"}})
+  );
+}
+
 /* ── PHOTOS ── */
 function PhotosView(){
   var[photos,setPhotos]=useState([]);
@@ -459,6 +480,7 @@ function PhotosView(){
   var[viewPhoto,setViewPhoto]=useState(null);
   var cameraRef=React.useRef(null);
   var uploadRef=React.useRef(null);
+  var slideDir=React.useRef("left");
 
   function loadPhotos(){
     sbListPhotos().then(function(p){setPhotos(p);setLoading(false);}).catch(function(){setLoading(false);});
@@ -520,7 +542,7 @@ function PhotosView(){
     React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4}},
       photos.map(function(p,i){
         var isVideo=/\.(mp4|mov|webm|avi)$/i.test(p.name);
-        return React.createElement("div",{key:i,onClick:function(){setViewPhoto(p);},
+        return React.createElement("div",{key:p.name,onClick:function(){setViewPhoto(p);},
           style:{aspectRatio:"1",overflow:"hidden",cursor:"pointer",background:"#f5f9f6",position:"relative"}},
           isVideo?React.createElement("video",{src:p.url,style:{width:"100%",height:"100%",objectFit:"cover"},muted:true}):
           React.createElement("img",{src:p.url,alt:"Wedding photo",loading:"lazy",style:{width:"100%",height:"100%",objectFit:"cover"}}),
@@ -536,38 +558,36 @@ function PhotosView(){
         if(typeof viewPhoto._sx==="undefined")return;
         var dx=(e.changedTouches[0]||{}).clientX-viewPhoto._sx;
         var idx=photos.findIndex(function(p){return p.name===viewPhoto.name;});
-        if(dx<-50&&idx<photos.length-1)setViewPhoto(photos[idx+1]);
-        else if(dx>50&&idx>0)setViewPhoto(photos[idx-1]);
+        if(dx<-50&&idx<photos.length-1){slideDir.current="left";setViewPhoto(photos[idx+1]);}
+        else if(dx>50&&idx>0){slideDir.current="right";setViewPhoto(photos[idx-1]);}
         delete viewPhoto._sx;
       },
       onClick:function(){setViewPhoto(null);},
-      style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,cursor:"pointer"}},
+      style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,cursor:"pointer",WebkitTapHighlightColor:"transparent"}},
       React.createElement("button",{onClick:function(e){
         e.stopPropagation();
         fetch(viewPhoto.url).then(function(r){return r.blob();}).then(function(blob){
           var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=viewPhoto.name;a.click();URL.revokeObjectURL(a.href);
         });
-      },style:{position:"absolute",top:16,right:16,background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",padding:"10px 16px",cursor:"pointer",fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:"0.14em",display:"flex",alignItems:"center",gap:6,zIndex:301}},
+      },style:{position:"absolute",top:16,right:16,background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",padding:"10px 16px",cursor:"pointer",fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:"0.14em",display:"flex",alignItems:"center",gap:6,zIndex:301,WebkitTapHighlightColor:"transparent"}},
         React.createElement("svg",{width:16,height:16,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
           React.createElement("path",{d:"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"}),
           React.createElement("polyline",{points:"7 11 12 16 17 11"}),
           React.createElement("line",{x1:12,y1:16,x2:12,y2:4})),
         "DOWNLOAD"),
       (function(){var idx=photos.findIndex(function(p){return p.name===viewPhoto.name;});
-        return idx>0?React.createElement("button",{onClick:function(e){e.stopPropagation();setViewPhoto(photos[idx-1]);},
-          style:{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",color:"#fff",width:40,height:40,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:301}},
+        return idx>0?React.createElement("button",{onClick:function(e){e.stopPropagation();slideDir.current="right";setViewPhoto(photos[idx-1]);},
+          style:{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",color:"#fff",width:40,height:40,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:301,WebkitTapHighlightColor:"transparent"}},
           React.createElement("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},
             React.createElement("polyline",{points:"15 18 9 12 15 6"}))):null;})(),
       (function(){var idx=photos.findIndex(function(p){return p.name===viewPhoto.name;});
-        return idx<photos.length-1?React.createElement("button",{onClick:function(e){e.stopPropagation();setViewPhoto(photos[idx+1]);},
-          style:{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",color:"#fff",width:40,height:40,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:301}},
+        return idx<photos.length-1?React.createElement("button",{onClick:function(e){e.stopPropagation();slideDir.current="left";setViewPhoto(photos[idx+1]);},
+          style:{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",color:"#fff",width:40,height:40,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:301,WebkitTapHighlightColor:"transparent"}},
           React.createElement("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},
             React.createElement("polyline",{points:"9 6 15 12 9 18"}))):null;})(),
       (function(){var idx=photos.findIndex(function(p){return p.name===viewPhoto.name;});
         return React.createElement("div",{style:{position:"absolute",bottom:16,left:"50%",transform:"translateX(-50%)",color:"rgba(255,255,255,0.5)",fontFamily:"'DM Sans',sans-serif",fontSize:12}},(idx+1)+" / "+photos.length);})(),
-      /\.(mp4|mov|webm|avi)$/i.test(viewPhoto.name)?
-        React.createElement("video",{src:viewPhoto.url,controls:true,autoPlay:true,style:{maxWidth:"85%",maxHeight:"80vh"},onClick:function(e){e.stopPropagation();}}):
-        React.createElement("img",{src:viewPhoto.url,alt:"Wedding photo",style:{maxWidth:"85%",maxHeight:"80vh",objectFit:"contain"}})
+      React.createElement(SlidePhoto,{key:viewPhoto.name,photo:viewPhoto,dir:slideDir.current})
     )
   );
 }
