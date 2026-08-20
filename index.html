@@ -500,7 +500,7 @@ function SlidePhoto(props){
 
 function downloadWithWatermark(photoUrl,photoName){
   sbTrackDownload(photoName);
-  triggerDownload(photoUrl);
+  triggerDownload(photoUrl,photoName);
 }
 
 /* ── PHOTOS ── */
@@ -617,10 +617,14 @@ function PhotosView(){
       (function(){var idx=photos.findIndex(function(p){return p.name===viewPhoto.name;});
         return React.createElement("div",{style:{position:"absolute",bottom:16,left:"50%",transform:"translateX(-50%)",display:"flex",flexDirection:"column",alignItems:"center",gap:8}},
           React.createElement("div",{style:{color:"rgba(255,255,255,0.5)",fontFamily:"'DM Sans',sans-serif",fontSize:12}},(idx+1)+" / "+photos.length),
-          React.createElement("button",{onClick:function(e){
-            e.stopPropagation();
-            downloadWithWatermark(viewPhoto.url,viewPhoto.name);
-          },style:{background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",padding:"8px 14px",cursor:"pointer",fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:"0.14em",display:"flex",alignItems:"center",gap:6,WebkitTapHighlightColor:"transparent"}},
+          React.createElement("button",{
+            onPointerUp:function(e){
+              e.stopPropagation();e.preventDefault();
+              var a=getDlAnchor();a.href=viewPhoto.url+"?download=";a.download=viewPhoto.name;a.click();
+              sbTrackDownload(viewPhoto.name);
+            },
+            onClick:function(e){e.stopPropagation();e.preventDefault();},
+            style:{background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",padding:"8px 14px",cursor:"pointer",fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:"0.14em",display:"flex",alignItems:"center",gap:6,WebkitTapHighlightColor:"transparent"}},
             React.createElement("svg",{width:14,height:14,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
               React.createElement("path",{d:"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"}),
               React.createElement("polyline",{points:"7 11 12 16 17 11"}),
@@ -633,17 +637,22 @@ function PhotosView(){
 }
 
 /* ── ADMIN PHOTOS ── */
-function triggerDownload(url){
-  var iframe=document.createElement("iframe");
-  iframe.style.display="none";
-  iframe.src=url+"?download=";
-  document.body.appendChild(iframe);
-  setTimeout(function(){document.body.removeChild(iframe);},10000);
+var dlAnchor=null;
+function getDlAnchor(){
+  if(!dlAnchor){dlAnchor=document.createElement("a");dlAnchor.style.display="none";document.body.appendChild(dlAnchor);}
+  return dlAnchor;
+}
+
+function triggerDownload(url,name){
+  var a=getDlAnchor();
+  a.href=url+"?download=";
+  a.download=name||"";
+  a.click();
 }
 
 function downloadPhoto(url,name){
   sbTrackDownload(name);
-  triggerDownload(url);
+  triggerDownload(url,name);
 }
 
 function AdminPhotos(){
