@@ -617,16 +617,22 @@ function PhotosView(){
       (function(){var idx=photos.findIndex(function(p){return p.name===viewPhoto.name;});
         return React.createElement("div",{style:{position:"absolute",bottom:16,left:"50%",transform:"translateX(-50%)",display:"flex",flexDirection:"column",alignItems:"center",gap:8}},
           React.createElement("div",{style:{color:"rgba(255,255,255,0.5)",fontFamily:"'DM Sans',sans-serif",fontSize:12}},(idx+1)+" / "+photos.length),
-          React.createElement("a",{
-            href:viewPhoto.url+"?download=",
-            download:viewPhoto.name,
-            onClick:function(e){e.stopPropagation();sbTrackDownload(viewPhoto.name);},
-            style:{background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",padding:"8px 14px",cursor:"pointer",fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:"0.14em",display:"flex",alignItems:"center",gap:6,WebkitTapHighlightColor:"transparent",textDecoration:"none"}},
+          React.createElement("button",{
+            onClick:function(e){
+              e.stopPropagation();
+              sbTrackDownload(viewPhoto.name);
+              if(navigator.share){
+                navigator.share({title:"Wedding Photo",url:viewPhoto.url}).catch(function(){});
+              }else{
+                window.open(viewPhoto.url,"_blank");
+              }
+            },
+            style:{background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",padding:"8px 14px",cursor:"pointer",fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:"0.14em",display:"flex",alignItems:"center",gap:6,WebkitTapHighlightColor:"transparent"}},
             React.createElement("svg",{width:14,height:14,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
-              React.createElement("path",{d:"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"}),
-              React.createElement("polyline",{points:"7 11 12 16 17 11"}),
-              React.createElement("line",{x1:12,y1:16,x2:12,y2:4})),
-            "DOWNLOAD")
+              React.createElement("path",{d:"M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"}),
+              React.createElement("polyline",{points:"16 6 12 2 8 6"}),
+              React.createElement("line",{x1:12,y1:2,x2:12,y2:15})),
+            "SAVE")
         );})(),
       React.createElement(SlidePhoto,{key:viewPhoto.name,photo:viewPhoto,dir:slideDir.current})
     )
