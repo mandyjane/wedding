@@ -471,23 +471,30 @@ function PhotosView(){
       React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",marginTop:8}},"Capture the moment and share with everyone")
     ),
 
-    React.createElement("div",{style:{display:"flex",gap:12,marginBottom:24}},
+    React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10,marginBottom:24}},
       React.createElement("input",{ref:cameraRef,type:"file",accept:"image/*,video/*",capture:"environment",
         style:{display:"none"},onChange:function(e){handleFiles(e.target.files);e.target.value="";}}),
       React.createElement("input",{ref:uploadRef,type:"file",accept:"image/*,video/*",multiple:true,
         style:{display:"none"},onChange:function(e){handleFiles(e.target.files);e.target.value="";}}),
 
       React.createElement("button",{onClick:function(){cameraRef.current.click();},disabled:uploading,
-        style:{flex:1,padding:"14px 8px",background:S.primary,color:"#fff",border:"none",
+        style:{padding:"14px",background:S.primary,color:"#fff",border:"none",
           fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:"0.14em",cursor:"pointer",
-          opacity:uploading?0.5:1}},
-        "\ud83d\udcf7  TAKE PHOTO"),
+          opacity:uploading?0.5:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
+        React.createElement("svg",{width:18,height:18,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
+          React.createElement("path",{d:"M5 7h1a2 2 0 0 0 2-2 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2"}),
+          React.createElement("circle",{cx:12,cy:13,r:3})),
+        "TAKE PHOTO"),
 
       React.createElement("button",{onClick:function(){uploadRef.current.click();},disabled:uploading,
-        style:{flex:1,padding:"14px 8px",background:"#fff",color:S.primary,border:"1px solid "+S.primary,
+        style:{padding:"14px",background:"#fff",color:S.primary,border:"1px solid "+S.primary,
           fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:"0.14em",cursor:"pointer",
-          opacity:uploading?0.5:1}},
-        "\ud83d\uddbc  UPLOAD")
+          opacity:uploading?0.5:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
+        React.createElement("svg",{width:18,height:18,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
+          React.createElement("path",{d:"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"}),
+          React.createElement("polyline",{points:"7 9 12 4 17 9"}),
+          React.createElement("line",{x1:12,y1:4,x2:12,y2:16})),
+        "UPLOAD")
     ),
 
     uploading&&React.createElement("div",{style:{textAlign:"center",padding:16,fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.sage}},"Uploading..."),
@@ -558,9 +565,9 @@ function App(){
     {id:"settings",label:"SETTINGS"},
   ];
 
-  useEffect(function(){try{var d=localStorage.getItem("la-wedding-v16");if(d){var p=JSON.parse(d);if(p.guests)setGuests(p.guests);if(p.timeline)setTimeline(p.timeline);if(p.menuData)setMenuData(p.menuData);if(p.bevData)setBevData(p.bevData);if(p.useAltBot)setUseAltBot(p.useAltBot);if(p.useAltTop)setUseAltTop(p.useAltTop);}}catch(e){}},
+  useEffect(function(){try{var d=localStorage.getItem("la-wedding-v17");if(d){var p=JSON.parse(d);if(p.guests)setGuests(p.guests);if(p.timeline)setTimeline(p.timeline);if(p.menuData)setMenuData(p.menuData);if(p.bevData)setBevData(p.bevData);if(p.useAltBot)setUseAltBot(p.useAltBot);if(p.useAltTop)setUseAltTop(p.useAltTop);}}catch(e){}},
   []);
-  useEffect(function(){try{localStorage.setItem("la-wedding-v16",JSON.stringify({guests:guests,timeline:timeline,menuData:menuData,bevData:bevData,useAltBot:useAltBot,useAltTop:useAltTop}));}catch(e){}},
+  useEffect(function(){try{localStorage.setItem("la-wedding-v17",JSON.stringify({guests:guests,timeline:timeline,menuData:menuData,bevData:bevData,useAltBot:useAltBot,useAltTop:useAltTop}));}catch(e){}},
   [guests,timeline,menuData,bevData,useAltBot,useAltTop]);
 
   var ist={padding:"10px 14px",border:"1px solid #d5e3d9",fontSize:14,fontFamily:"'DM Sans',sans-serif",background:"#fff",width:"100%",boxSizing:"border-box"};
