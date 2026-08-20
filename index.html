@@ -453,11 +453,11 @@ function sbLoadDlCounts(){
 function sbTrackDownload(photoName){
   sbLoadDlCounts().then(function(counts){
     counts[photoName]=(counts[photoName]||0)+1;
-    var blob=new Blob([JSON.stringify(counts)],{type:"application/json"});
+    var jsonStr=JSON.stringify(counts);
     return fetch(SB_URL+"/storage/v1/object/"+SB_BUCKET+"/"+SB_DL_KEY,{
       method:"POST",
-      headers:Object.assign({"Content-Type":"application/json","x-upsert":"true"},sbHeaders()),
-      body:blob
+      headers:Object.assign({"Content-Type":"application/octet-stream","x-upsert":"true"},sbHeaders()),
+      body:jsonStr
     });
   }).catch(function(){});
 }
@@ -468,11 +468,11 @@ function sbLoadConfig(){
 }
 
 function sbSaveConfig(data){
-  var blob=new Blob([JSON.stringify(data)],{type:"application/json"});
+  var jsonStr=JSON.stringify(data);
   return fetch(SB_URL+"/storage/v1/object/"+SB_BUCKET+"/"+SB_CONFIG_KEY,{
     method:"POST",
-    headers:Object.assign({"Content-Type":"application/json","x-upsert":"true"},sbHeaders()),
-    body:blob
+    headers:Object.assign({"Content-Type":"application/octet-stream","x-upsert":"true"},sbHeaders()),
+    body:jsonStr
   });
 }
 
