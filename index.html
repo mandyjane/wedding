@@ -143,69 +143,59 @@ function SeatSearch(props){
 }
 
 /* ── MENU ── */
-function MenuView(){
-  var courses=[
-    {name:"ENTR\u00c9E",items:[
-      {name:"Borrowdale Pork Belly",desc:"roasted apple ketchup, fioretto [df, gf]"},
-    ]},
-    {name:"MAIN",items:[
-      {name:"Inglewood Organic Farm Chicken",desc:"corn puree, roasted baby gem, mustard jus [gf, df]"},
-    ]},
-    {name:"DESSERT",items:[
-      {name:"Wedding Cake",desc:"with tea & coffee"},
-    ]},
-  ];
+var DEFAULT_MENU=[
+  {section:"Cocktail Hour",courses:[{name:"CANAP\u00c9S",dish:"Chef\u2019s Selection",desc:"of three (3) canap\u00e9s"}]},
+  {section:"Dinner Menu",courses:[
+    {name:"ENTR\u00c9E",dish:"Borrowdale Pork Belly",desc:"roasted apple ketchup, fioretto [df, gf]"},
+    {name:"MAIN",dish:"Inglewood Organic Farm Chicken",desc:"corn puree, roasted baby gem, mustard jus [gf, df]"},
+    {name:"DESSERT",dish:"Wedding Cake",desc:"with tea & coffee"},
+  ]}
+];
+
+function MenuView(props){
+  var menu=props.data||DEFAULT_MENU;
   return React.createElement("div",{style:{padding:"24px",maxWidth:420,margin:"0 auto"}},
-    React.createElement("div",{style:{textAlign:"center",marginBottom:28}},
-      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},"Cocktail Hour"),
-      React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
-    ),
-    React.createElement("div",{style:{marginBottom:32,textAlign:"center"}},
-      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:12,fontWeight:600}},"CANAP\u00c9S"),
-      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:18,fontWeight:500,color:S.primary,marginBottom:2}},"Chef\u2019s Selection"),
-      React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",fontStyle:"italic"}},"of three (3) canap\u00e9s")
-    ),
-    React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"0 auto 28px",opacity:0.25}}),
-    React.createElement("div",{style:{textAlign:"center",marginBottom:28}},
-      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},"Dinner Menu"),
-      React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
-    ),
-    courses.map(function(c,ci){return React.createElement("div",{key:ci,style:{marginBottom:28,textAlign:"center"}},
-      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:14,fontWeight:600}},c.name),
-      c.items.map(function(item,ii){return React.createElement("div",{key:ii,style:{marginBottom:14}},
-        React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:18,fontWeight:500,color:S.primary,marginBottom:2}},item.name),
-        React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",fontStyle:"italic"}},item.desc)
+    menu.map(function(sec,si){return React.createElement(React.Fragment,{key:si},
+      si>0&&React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"0 auto 28px",opacity:0.25}}),
+      React.createElement("div",{style:{textAlign:"center",marginBottom:28}},
+        React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},sec.section),
+        React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
+      ),
+      sec.courses.map(function(c,ci){return React.createElement("div",{key:ci,style:{marginBottom:28,textAlign:"center"}},
+        React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:12,fontWeight:600}},c.name),
+        React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:18,fontWeight:500,color:S.primary,marginBottom:2}},c.dish),
+        React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",fontStyle:"italic"}},c.desc)
       )})
-    )})
+    );})
   );
 }
 
 /* ── BEVERAGES ── */
-function BeveragesView(){
-  const sections=[
+var DEFAULT_BEV={
+  sections:[
     {name:"WINE",items:["Contemporary Sauvignon Blanc, Marlborough, NZ","Contemporary Ros\u00e9, Multi Region, Australia","Contemporary Shiraz, Multi Region, Australia"]},
     {name:"SPARKLING",items:["Zilzie BTW Prosecco N.V, South Australia"]},
     {name:"DRAUGHT BEERS & CIDER",items:["Somersby Apple Cider","Great Northern Mid Lager","Balter Hazy IPA","Green Beacon 19th Hole Pale Ale","Diablo Ginger Beer","Balter XPA"]},
     {name:"NON-ALCOHOLIC",items:["Schweppes soft drinks and juices","Still and Sparkling Water"]},
-  ];
+  ],
+  notes:["Additional beverages not on the above list can be purchased in the Victorian Long Bar, adjoining the Rosewood Room where the reception dinner will be held.","Beverage service will commence during cocktail hour at 5PM and conclude at 9PM.","Cash bar will be available thereafter until last call at 9:30PM."]
+};
+
+function BeveragesView(props){
+  var bev=props.data||DEFAULT_BEV;
   return React.createElement("div",{style:{padding:"24px",maxWidth:420,margin:"0 auto"}},
     React.createElement("div",{style:{textAlign:"center",marginBottom:28}},
       React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},"Beverages"),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
     ),
-    sections.map((s,si)=>React.createElement("div",{key:si,style:{marginBottom:26,textAlign:"center"}},
-      React.createElement("div",{style:{...S.spaced,fontSize:10,color:S.sage,marginBottom:12,fontWeight:600}},s.name),
-      s.items.map((item,ii)=>React.createElement("div",{key:ii,style:{
+    bev.sections.map(function(s,si){return React.createElement("div",{key:si,style:{marginBottom:26,textAlign:"center"}},
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:12,fontWeight:600}},s.name),
+      s.items.map(function(item,ii){return React.createElement("div",{key:ii,style:{
         fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:400,color:S.primary,marginBottom:8,lineHeight:1.3,
-      }},item))
-    )),
+      }},item);})
+    );}),
     React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"8px auto 20px",opacity:0.3}}),
-    React.createElement("div",{style:{...S.sans,fontSize:12,color:S.text+"66",textAlign:"center",lineHeight:1.6,maxWidth:360,margin:"0 auto"}},
-      "Additional beverages not on the above list can be purchased in the Victorian Long Bar, adjoining the Rosewood Room where the reception dinner will be held."),
-    React.createElement("div",{style:{...S.sans,fontSize:12,color:S.text+"66",textAlign:"center",lineHeight:1.6,maxWidth:360,margin:"12px auto 0"}},
-      "Beverage service will commence during cocktail hour at 5PM and conclude at 9PM."),
-    React.createElement("div",{style:{...S.sans,fontSize:12,color:S.text+"66",textAlign:"center",lineHeight:1.6,maxWidth:360,margin:"10px auto 0"}},
-      "Cash bar will be available thereafter until last call at 9:30PM.")
+    bev.notes.map(function(n,ni){return React.createElement("div",{key:ni,style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"66",textAlign:"center",lineHeight:1.6,maxWidth:360,margin:(ni>0?"10px":"0")+" auto 0"}},n);})
   );
 }
 
@@ -430,9 +420,33 @@ function sbListPhotos(){
     body:JSON.stringify({prefix:"",limit:500,offset:0,sortBy:{column:"created_at",order:"desc"}})
   }).then(function(r){return r.json();})
   .then(function(files){
-    return files.filter(function(f){return f.name&&!f.name.startsWith(".");}).map(function(f){
+    return files.filter(function(f){return f.name&&!f.name.startsWith(".")&&f.name!=="app-config.json";}).map(function(f){
       return {name:f.name,url:SB_URL+"/storage/v1/object/public/"+SB_BUCKET+"/"+f.name,created:f.created_at};
     });
+  });
+}
+
+function sbDeletePhoto(name){
+  return fetch(SB_URL+"/storage/v1/object/"+SB_BUCKET+"/"+name,{
+    method:"DELETE",
+    headers:sbHeaders()
+  });
+}
+
+/* ── SUPABASE CONFIG SYNC ── */
+var SB_CONFIG_KEY="app-config.json";
+
+function sbLoadConfig(){
+  return fetch(SB_URL+"/storage/v1/object/public/"+SB_BUCKET+"/"+SB_CONFIG_KEY+"?t="+Date.now())
+    .then(function(r){if(!r.ok)throw new Error("No config");return r.json();});
+}
+
+function sbSaveConfig(data){
+  var blob=new Blob([JSON.stringify(data)],{type:"application/json"});
+  return fetch(SB_URL+"/storage/v1/object/"+SB_BUCKET+"/"+SB_CONFIG_KEY,{
+    method:"POST",
+    headers:Object.assign({"Content-Type":"application/json","x-upsert":"true"},sbHeaders()),
+    body:blob
   });
 }
 
@@ -472,7 +486,7 @@ function PhotosView(){
     ),
 
     React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10,marginBottom:24}},
-      React.createElement("input",{ref:cameraRef,type:"file",accept:"image/*,video/*",capture:"environment",
+      React.createElement("input",{ref:cameraRef,type:"file",accept:"image/*",capture:"environment",
         style:{display:"none"},onChange:function(e){handleFiles(e.target.files);e.target.value="";}}),
       React.createElement("input",{ref:uploadRef,type:"file",accept:"image/*,video/*",multiple:true,
         style:{display:"none"},onChange:function(e){handleFiles(e.target.files);e.target.value="";}}),
@@ -524,12 +538,46 @@ function PhotosView(){
   );
 }
 
+/* ── ADMIN PHOTOS ── */
+function AdminPhotos(){
+  var[photos,setPhotos]=useState([]);
+  var[loading,setLoading]=useState(true);
+
+  function load(){
+    setLoading(true);
+    sbListPhotos().then(function(p){setPhotos(p);setLoading(false);}).catch(function(){setLoading(false);});
+  }
+  useEffect(function(){load();},[]);
+
+  function deletePhoto(name){
+    if(!confirm("Delete this photo?"))return;
+    sbDeletePhoto(name).then(function(){load();}).catch(function(){alert("Delete failed");});
+  }
+
+  return React.createElement("div",null,
+    React.createElement("h3",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:11,color:S.primary,marginBottom:14}},"MANAGE PHOTOS"),
+    loading?React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.text+"55",padding:20,textAlign:"center"}},"Loading..."):
+    photos.length===0?React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.text+"55",padding:20,textAlign:"center"}},"No photos uploaded yet"):
+    React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}},
+      photos.map(function(p,i){
+        return React.createElement("div",{key:i,style:{position:"relative"}},
+          React.createElement("img",{src:p.url,alt:"",style:{width:"100%",aspectRatio:"1",objectFit:"cover",display:"block"}}),
+          React.createElement("button",{onClick:function(){deletePhoto(p.name);},
+            style:{position:"absolute",top:4,right:4,width:24,height:24,borderRadius:"50%",
+              background:"rgba(0,0,0,0.6)",color:"#fff",border:"none",cursor:"pointer",fontSize:14,
+              display:"flex",alignItems:"center",justifyContent:"center"}},"\u00d7")
+        );
+      })
+    )
+  );
+}
+
 /* ── MAIN APP ── */
 function App(){
   var[guests,setGuests]=useState(GUESTS);
   var[timeline,setTimeline]=useState(TIMELINE);
-  var[menuData,setMenuData]=useState(null);
-  var[bevData,setBevData]=useState(null);
+  var[menuData,setMenuData]=useState(DEFAULT_MENU);
+  var[bevData,setBevData]=useState(DEFAULT_BEV);
   var[useAltBot,setUseAltBot]=useState(true);
   var[useAltTop,setUseAltTop]=useState(true);
   var[tab,setTab]=useState("timeline");
@@ -562,13 +610,28 @@ function App(){
     {id:"timeline",label:"TIMELINE"},
     {id:"menu",label:"MENU"},
     {id:"beverages",label:"BEVERAGES"},
+    {id:"photos",label:"PHOTOS"},
     {id:"settings",label:"SETTINGS"},
   ];
 
-  useEffect(function(){try{var d=localStorage.getItem("la-wedding-v17");if(d){var p=JSON.parse(d);if(p.guests)setGuests(p.guests);if(p.timeline)setTimeline(p.timeline);if(p.menuData)setMenuData(p.menuData);if(p.bevData)setBevData(p.bevData);if(p.useAltBot)setUseAltBot(p.useAltBot);if(p.useAltTop)setUseAltTop(p.useAltTop);}}catch(e){}},
-  []);
-  useEffect(function(){try{localStorage.setItem("la-wedding-v17",JSON.stringify({guests:guests,timeline:timeline,menuData:menuData,bevData:bevData,useAltBot:useAltBot,useAltTop:useAltTop}));}catch(e){}},
-  [guests,timeline,menuData,bevData,useAltBot,useAltTop]);
+  var[configLoaded,setConfigLoaded]=useState(false);
+
+  useEffect(function(){
+    sbLoadConfig().then(function(p){
+      if(p.guests)setGuests(p.guests);
+      if(p.timeline)setTimeline(p.timeline);
+      if(p.menuData)setMenuData(p.menuData);
+      if(p.bevData)setBevData(p.bevData);
+      if(typeof p.useAltBot!=="undefined")setUseAltBot(p.useAltBot);
+      if(typeof p.useAltTop!=="undefined")setUseAltTop(p.useAltTop);
+      setConfigLoaded(true);
+    }).catch(function(){setConfigLoaded(true);});
+  },[]);
+
+  function saveConfig(newData){
+    var data=Object.assign({guests:guests,timeline:timeline,menuData:menuData,bevData:bevData,useAltBot:useAltBot,useAltTop:useAltTop},newData||{});
+    sbSaveConfig(data).catch(function(e){alert("Save failed. Check your connection and try again.");});
+  }
 
   var ist={padding:"10px 14px",border:"1px solid #d5e3d9",fontSize:14,fontFamily:"'DM Sans',sans-serif",background:"#fff",width:"100%",boxSizing:"border-box"};
 
@@ -613,8 +676,11 @@ function App(){
     mode==="admin"&&React.createElement("div",{style:{maxWidth:520,margin:"0 auto",minHeight:"100vh",background:"#fff",padding:20}},
       React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
         React.createElement("h2",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:12,color:S.primary}},"ADMIN PANEL"),
-        React.createElement("button",{onClick:function(){setMode("guest");},
-          style:{fontFamily:"'DM Sans',sans-serif",padding:"8px 18px",background:S.primary,color:"#fff",border:"none",fontSize:12,cursor:"pointer"}},"PREVIEW")),
+        React.createElement("div",{style:{display:"flex",gap:8}},
+          React.createElement("button",{onClick:function(){saveConfig();},
+            style:{fontFamily:"'DM Sans',sans-serif",padding:"8px 18px",background:"#fff",color:S.primary,border:"1px solid "+S.primary,fontSize:12,cursor:"pointer"}},"SAVE"),
+          React.createElement("button",{onClick:function(){saveConfig();setMode("guest");},
+            style:{fontFamily:"'DM Sans',sans-serif",padding:"8px 18px",background:S.primary,color:"#fff",border:"none",fontSize:12,cursor:"pointer"}},"SAVE & PREVIEW"))),
       React.createElement(Tabs,{tabs:adminTabs,active:adminTab,onChange:function(t){setAdminTab(t);}}),
       React.createElement("div",{style:{marginTop:16}},
 
@@ -635,16 +701,61 @@ function App(){
         ),
 
         adminTab==="menu"&&React.createElement("div",null,
-          React.createElement("h3",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:11,color:S.primary,marginBottom:8}},"MENU CONTENT"),
-          React.createElement("p",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",marginBottom:12}},"Edit the raw menu text below. Use blank lines between sections."),
-          React.createElement("textarea",{value:menuData||"",onChange:function(e){setMenuData(e.target.value);},placeholder:"Leave empty to use default menu.\n\nOr paste your custom menu text here.\nUse the format:\n\nCOCKTAIL HOUR\nCANAPES\nChef's Selection\nof three (3) canapes\n\nDINNER MENU\nENTREE\nDish Name\ndescription",rows:16,style:Object.assign({},ist,{resize:"vertical"})})
+          React.createElement("h3",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:11,color:S.primary,marginBottom:14}},"MENU"),
+          menuData.map(function(sec,si){
+            return React.createElement("div",{key:si,style:{marginBottom:20,padding:12,border:"1px solid #e0ebe3"}},
+              React.createElement("div",{style:{display:"flex",gap:6,alignItems:"center",marginBottom:10}},
+                React.createElement("input",{value:sec.section,onChange:function(e){var m=menuData.slice();m[si]=Object.assign({},m[si],{section:e.target.value});setMenuData(m);},placeholder:"Section name",style:Object.assign({},ist,{fontWeight:500})}),
+                React.createElement("button",{onClick:function(){setMenuData(menuData.filter(function(_,idx){return idx!==si;}));},style:{background:"none",border:"none",color:"#b99",cursor:"pointer",fontSize:18}},"\u00d7")
+              ),
+              sec.courses.map(function(c,ci){
+                return React.createElement("div",{key:ci,style:{display:"flex",gap:6,marginBottom:6,flexWrap:"wrap",alignItems:"start"}},
+                  React.createElement("input",{value:c.name,onChange:function(e){var m=menuData.slice();var courses=m[si].courses.slice();courses[ci]=Object.assign({},courses[ci],{name:e.target.value});m[si]=Object.assign({},m[si],{courses:courses});setMenuData(m);},placeholder:"Course",style:Object.assign({},ist,{width:80,fontSize:12})}),
+                  React.createElement("input",{value:c.dish,onChange:function(e){var m=menuData.slice();var courses=m[si].courses.slice();courses[ci]=Object.assign({},courses[ci],{dish:e.target.value});m[si]=Object.assign({},m[si],{courses:courses});setMenuData(m);},placeholder:"Dish",style:Object.assign({},ist,{flex:"1 1 120px",fontSize:12})}),
+                  React.createElement("input",{value:c.desc,onChange:function(e){var m=menuData.slice();var courses=m[si].courses.slice();courses[ci]=Object.assign({},courses[ci],{desc:e.target.value});m[si]=Object.assign({},m[si],{courses:courses});setMenuData(m);},placeholder:"Description",style:Object.assign({},ist,{flex:"1 1 160px",fontSize:12})}),
+                  React.createElement("button",{onClick:function(){var m=menuData.slice();var courses=m[si].courses.filter(function(_,idx){return idx!==ci;});m[si]=Object.assign({},m[si],{courses:courses});setMenuData(m);},style:{background:"none",border:"none",color:"#b99",cursor:"pointer",fontSize:16}},"\u00d7")
+                );
+              }),
+              React.createElement("button",{onClick:function(){var m=menuData.slice();var courses=m[si].courses.concat([{name:"",dish:"",desc:""}]);m[si]=Object.assign({},m[si],{courses:courses});setMenuData(m);},style:{fontFamily:"'DM Sans',sans-serif",background:"none",border:"1px dashed #d5e3d9",padding:6,fontSize:11,cursor:"pointer",color:S.sage,width:"100%",marginTop:4}},
+                "+ Add course")
+            );
+          }),
+          React.createElement("button",{onClick:function(){setMenuData(menuData.concat([{section:"",courses:[{name:"",dish:"",desc:""}]}]));},style:{fontFamily:"'DM Sans',sans-serif",background:"none",border:"1px dashed #d5e3d9",padding:10,fontSize:12,cursor:"pointer",color:S.sage,width:"100%",marginTop:8}},
+            "+ Add section")
         ),
 
         adminTab==="beverages"&&React.createElement("div",null,
-          React.createElement("h3",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:11,color:S.primary,marginBottom:8}},"BEVERAGES CONTENT"),
-          React.createElement("p",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",marginBottom:12}},"Edit the raw beverages text below."),
-          React.createElement("textarea",{value:bevData||"",onChange:function(e){setBevData(e.target.value);},placeholder:"Leave empty to use default beverages.",rows:16,style:Object.assign({},ist,{resize:"vertical"})})
+          React.createElement("h3",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:11,color:S.primary,marginBottom:14}},"BEVERAGES"),
+          bevData.sections.map(function(sec,si){
+            return React.createElement("div",{key:si,style:{marginBottom:16,padding:12,border:"1px solid #e0ebe3"}},
+              React.createElement("div",{style:{display:"flex",gap:6,alignItems:"center",marginBottom:8}},
+                React.createElement("input",{value:sec.name,onChange:function(e){var b=Object.assign({},bevData);var secs=b.sections.slice();secs[si]=Object.assign({},secs[si],{name:e.target.value});b.sections=secs;setBevData(b);},placeholder:"Section name",style:Object.assign({},ist,{fontWeight:500})}),
+                React.createElement("button",{onClick:function(){var b=Object.assign({},bevData);b.sections=b.sections.filter(function(_,idx){return idx!==si;});setBevData(b);},style:{background:"none",border:"none",color:"#b99",cursor:"pointer",fontSize:18}},"\u00d7")
+              ),
+              sec.items.map(function(item,ii){
+                return React.createElement("div",{key:ii,style:{display:"flex",gap:6,marginBottom:4}},
+                  React.createElement("input",{value:item,onChange:function(e){var b=Object.assign({},bevData);var secs=b.sections.slice();var items=secs[si].items.slice();items[ii]=e.target.value;secs[si]=Object.assign({},secs[si],{items:items});b.sections=secs;setBevData(b);},style:Object.assign({},ist,{flex:1,fontSize:12})}),
+                  React.createElement("button",{onClick:function(){var b=Object.assign({},bevData);var secs=b.sections.slice();var items=secs[si].items.filter(function(_,idx){return idx!==ii;});secs[si]=Object.assign({},secs[si],{items:items});b.sections=secs;setBevData(b);},style:{background:"none",border:"none",color:"#b99",cursor:"pointer",fontSize:16}},"\u00d7")
+                );
+              }),
+              React.createElement("button",{onClick:function(){var b=Object.assign({},bevData);var secs=b.sections.slice();var items=secs[si].items.concat([""]);secs[si]=Object.assign({},secs[si],{items:items});b.sections=secs;setBevData(b);},style:{fontFamily:"'DM Sans',sans-serif",background:"none",border:"1px dashed #d5e3d9",padding:6,fontSize:11,cursor:"pointer",color:S.sage,width:"100%",marginTop:4}},
+                "+ Add item")
+            );
+          }),
+          React.createElement("button",{onClick:function(){var b=Object.assign({},bevData);b.sections=b.sections.concat([{name:"",items:[""]}]);setBevData(b);},style:{fontFamily:"'DM Sans',sans-serif",background:"none",border:"1px dashed #d5e3d9",padding:10,fontSize:12,cursor:"pointer",color:S.sage,width:"100%",marginTop:8}},
+            "+ Add section"),
+          React.createElement("h3",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:11,color:S.primary,marginTop:20,marginBottom:10}},"NOTES"),
+          bevData.notes.map(function(n,ni){
+            return React.createElement("div",{key:ni,style:{display:"flex",gap:6,marginBottom:6}},
+              React.createElement("textarea",{value:n,onChange:function(e){var b=Object.assign({},bevData);var notes=b.notes.slice();notes[ni]=e.target.value;b.notes=notes;setBevData(b);},rows:2,style:Object.assign({},ist,{flex:1,fontSize:12,resize:"vertical"})}),
+              React.createElement("button",{onClick:function(){var b=Object.assign({},bevData);b.notes=b.notes.filter(function(_,idx){return idx!==ni;});setBevData(b);},style:{background:"none",border:"none",color:"#b99",cursor:"pointer",fontSize:16,alignSelf:"start"}},"\u00d7")
+            );
+          }),
+          React.createElement("button",{onClick:function(){var b=Object.assign({},bevData);b.notes=b.notes.concat([""]);setBevData(b);},style:{fontFamily:"'DM Sans',sans-serif",background:"none",border:"1px dashed #d5e3d9",padding:6,fontSize:11,cursor:"pointer",color:S.sage,width:"100%",marginTop:4}},
+            "+ Add note")
         ),
+
+        adminTab==="photos"&&React.createElement(AdminPhotos),
 
         adminTab==="settings"&&React.createElement("div",null,
           React.createElement("h3",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:11,color:S.primary,marginBottom:14}},"SETTINGS"),
