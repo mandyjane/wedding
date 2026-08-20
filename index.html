@@ -480,24 +480,40 @@ function SlidePhoto(props){
 }
 
 function downloadWithWatermark(photoUrl,photoName){
-  var img=new Image();img.crossOrigin="anonymous";
+  var img=new Image();
+  img.crossOrigin="anonymous";
   img.onload=function(){
-    var canvas=document.createElement("canvas");
-    canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
-    var ctx=canvas.getContext("2d");
-    ctx.drawImage(img,0,0);
-    var wm=new Image();
-    wm.onload=function(){
-      var wmW=canvas.width*0.2;
-      var wmH=wmW*(wm.naturalHeight/wm.naturalWidth);
-      ctx.globalAlpha=0.8;
-      ctx.drawImage(wm,canvas.width-wmW-20,canvas.height-wmH-20,wmW,wmH);
-      ctx.globalAlpha=1;
-      canvas.toBlob(function(blob){
-        var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=photoName;a.click();URL.revokeObjectURL(a.href);
-      },"image/jpeg",0.92);
-    };
-    wm.src=WATERMARK;
+    try{
+      var canvas=document.createElement("canvas");
+      canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
+      var ctx=canvas.getContext("2d");
+      ctx.drawImage(img,0,0);
+      var wm=new Image();
+      wm.onload=function(){
+        var wmW=canvas.width*0.2;
+        var wmH=wmW*(wm.naturalHeight/wm.naturalWidth);
+        ctx.globalAlpha=0.8;
+        ctx.drawImage(wm,canvas.width-wmW-20,canvas.height-wmH-20,wmW,wmH);
+        ctx.globalAlpha=1;
+        canvas.toBlob(function(blob){
+          var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=photoName;
+          document.body.appendChild(a);a.click();document.body.removeChild(a);
+          URL.revokeObjectURL(a.href);
+        },"image/jpeg",0.92);
+      };
+      wm.onerror=function(){
+        var a=document.createElement("a");a.href=photoUrl+"?download=";a.download=photoName;a.target="_blank";
+        document.body.appendChild(a);a.click();document.body.removeChild(a);
+      };
+      wm.src=WATERMARK;
+    }catch(e){
+      var a=document.createElement("a");a.href=photoUrl+"?download=";a.download=photoName;a.target="_blank";
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+    }
+  };
+  img.onerror=function(){
+    var a=document.createElement("a");a.href=photoUrl+"?download=";a.download=photoName;a.target="_blank";
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
   };
   img.src=photoUrl;
 }
@@ -627,9 +643,14 @@ function PhotosView(){
 
 /* ── ADMIN PHOTOS ── */
 function downloadPhoto(url,name){
-  fetch(url).then(function(r){return r.blob();}).then(function(blob){
-    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href);
-  });
+  var a=document.createElement("a");
+  a.href=url+"?download=";
+  a.download=name;
+  a.target="_blank";
+  a.rel="noopener";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 function AdminPhotos(){
@@ -655,11 +676,8 @@ function AdminPhotos(){
     function next(){
       if(i>=photos.length){setDownloading(false);return;}
       var p=photos[i];i++;
-      fetch(p.url).then(function(r){return r.blob();}).then(function(blob){
-        var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=p.name;a.click();
-        URL.revokeObjectURL(a.href);
-        setTimeout(next,500);
-      }).catch(function(){setTimeout(next,200);});
+      downloadPhoto(p.url,p.name);
+      setTimeout(next,800);
     }
     next();
   }
