@@ -621,12 +621,28 @@ function PhotosView(){
           React.createElement("button",{
             onClick:function(e){
               e.stopPropagation();
-              sbTrackDownload(viewPhoto.name);
-              var a=getDlAnchor();
-              a.href=viewPhoto.url+"?download=";
-              a.download=viewPhoto.name||"wedding-photo.jpg";
-              a.target="_self";
-              a.click();
+              try{
+                var debugInfo=[];
+                debugInfo.push("Photo: "+viewPhoto.name);
+                debugInfo.push("URL length: "+viewPhoto.url.length);
+                var a=getDlAnchor();
+                debugInfo.push("Anchor in DOM: "+document.body.contains(a));
+                a.href=viewPhoto.url+"?download=";
+                a.download=viewPhoto.name||"wedding-photo.jpg";
+                a.target="_self";
+                debugInfo.push("Href set: "+a.href.substring(0,60)+"...");
+                debugInfo.push("Download attr: "+a.download);
+                debugInfo.push("Body overflow: "+document.body.style.overflow);
+                debugInfo.push("Body position: "+document.body.style.position);
+                debugInfo.push("HTML overflow: "+document.documentElement.style.overflow);
+                a.click();
+                debugInfo.push("Click fired OK");
+                sbTrackDownload(viewPhoto.name);
+                console.log("Download debug:",debugInfo.join("\n"));
+                if(window._dlDebug){alert("DEBUG:\n"+debugInfo.join("\n"));}
+              }catch(err){
+                alert("Download error: "+err.message+"\n"+err.stack);
+              }
             },
             style:{background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",padding:"8px 14px",cursor:"pointer",fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:"0.14em",display:"flex",alignItems:"center",gap:6,WebkitTapHighlightColor:"transparent"}},
             React.createElement("svg",{width:14,height:14,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
