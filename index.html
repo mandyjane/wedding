@@ -427,9 +427,10 @@ function sbListPhotos(){
 }
 
 function sbDeletePhoto(name){
-  return fetch(SB_URL+"/storage/v1/object/"+SB_BUCKET+"/"+name,{
+  return fetch(SB_URL+"/storage/v1/object/"+SB_BUCKET,{
     method:"DELETE",
-    headers:sbHeaders()
+    headers:Object.assign({"Content-Type":"application/json"},sbHeaders()),
+    body:JSON.stringify({prefixes:[name]})
   });
 }
 
@@ -529,19 +530,59 @@ function PhotosView(){
       })
     ),
 
-    viewPhoto&&React.createElement("div",{onClick:function(){setViewPhoto(null);},
+    viewPhoto&&React.createElement("div",{
+      onTouchStart:function(e){if(e.touches.length===1){viewPhoto._sx=e.touches[0].clientX;}},
+      onTouchEnd:function(e){
+        if(typeof viewPhoto._sx==="undefined")return;
+        var dx=(e.changedTouches[0]||{}).clientX-viewPhoto._sx;
+        var idx=photos.findIndex(function(p){return p.name===viewPhoto.name;});
+        if(dx<-50&&idx<photos.length-1)setViewPhoto(photos[idx+1]);
+        else if(dx>50&&idx>0)setViewPhoto(photos[idx-1]);
+        delete viewPhoto._sx;
+      },
+      onClick:function(){setViewPhoto(null);},
       style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,cursor:"pointer"}},
+      React.createElement("button",{onClick:function(e){
+        e.stopPropagation();
+        fetch(viewPhoto.url).then(function(r){return r.blob();}).then(function(blob){
+          var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=viewPhoto.name;a.click();URL.revokeObjectURL(a.href);
+        });
+      },style:{position:"absolute",top:16,right:16,background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",padding:"10px 16px",cursor:"pointer",fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:"0.14em",display:"flex",alignItems:"center",gap:6,zIndex:301}},
+        React.createElement("svg",{width:16,height:16,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
+          React.createElement("path",{d:"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"}),
+          React.createElement("polyline",{points:"7 11 12 16 17 11"}),
+          React.createElement("line",{x1:12,y1:16,x2:12,y2:4})),
+        "DOWNLOAD"),
+      (function(){var idx=photos.findIndex(function(p){return p.name===viewPhoto.name;});
+        return idx>0?React.createElement("button",{onClick:function(e){e.stopPropagation();setViewPhoto(photos[idx-1]);},
+          style:{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",color:"#fff",width:40,height:40,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:301}},
+          React.createElement("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},
+            React.createElement("polyline",{points:"15 18 9 12 15 6"}))):null;})(),
+      (function(){var idx=photos.findIndex(function(p){return p.name===viewPhoto.name;});
+        return idx<photos.length-1?React.createElement("button",{onClick:function(e){e.stopPropagation();setViewPhoto(photos[idx+1]);},
+          style:{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",color:"#fff",width:40,height:40,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:301}},
+          React.createElement("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},
+            React.createElement("polyline",{points:"9 6 15 12 9 18"}))):null;})(),
+      (function(){var idx=photos.findIndex(function(p){return p.name===viewPhoto.name;});
+        return React.createElement("div",{style:{position:"absolute",bottom:16,left:"50%",transform:"translateX(-50%)",color:"rgba(255,255,255,0.5)",fontFamily:"'DM Sans',sans-serif",fontSize:12}},(idx+1)+" / "+photos.length);})(),
       /\.(mp4|mov|webm|avi)$/i.test(viewPhoto.name)?
-        React.createElement("video",{src:viewPhoto.url,controls:true,autoPlay:true,style:{maxWidth:"95%",maxHeight:"90vh"},onClick:function(e){e.stopPropagation();}}):
-        React.createElement("img",{src:viewPhoto.url,alt:"Wedding photo",style:{maxWidth:"95%",maxHeight:"90vh",objectFit:"contain"}})
+        React.createElement("video",{src:viewPhoto.url,controls:true,autoPlay:true,style:{maxWidth:"85%",maxHeight:"80vh"},onClick:function(e){e.stopPropagation();}}):
+        React.createElement("img",{src:viewPhoto.url,alt:"Wedding photo",style:{maxWidth:"85%",maxHeight:"80vh",objectFit:"contain"}})
     )
   );
 }
 
 /* ── ADMIN PHOTOS ── */
+function downloadPhoto(url,name){
+  fetch(url).then(function(r){return r.blob();}).then(function(blob){
+    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href);
+  });
+}
+
 function AdminPhotos(){
   var[photos,setPhotos]=useState([]);
   var[loading,setLoading]=useState(true);
+  var[downloading,setDownloading]=useState(false);
 
   function load(){
     setLoading(true);
@@ -554,18 +595,48 @@ function AdminPhotos(){
     sbDeletePhoto(name).then(function(){load();}).catch(function(){alert("Delete failed");});
   }
 
+  function downloadAll(){
+    if(!photos.length)return;
+    setDownloading(true);
+    var i=0;
+    function next(){
+      if(i>=photos.length){setDownloading(false);return;}
+      var p=photos[i];i++;
+      fetch(p.url).then(function(r){return r.blob();}).then(function(blob){
+        var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=p.name;a.click();
+        URL.revokeObjectURL(a.href);
+        setTimeout(next,500);
+      }).catch(function(){setTimeout(next,200);});
+    }
+    next();
+  }
+
   return React.createElement("div",null,
-    React.createElement("h3",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:11,color:S.primary,marginBottom:14}},"MANAGE PHOTOS"),
+    React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}},
+      React.createElement("h3",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:11,color:S.primary,margin:0}},"MANAGE PHOTOS"),
+      photos.length>0&&React.createElement("button",{onClick:downloadAll,disabled:downloading,
+        style:{fontFamily:"'DM Sans',sans-serif",padding:"8px 14px",background:downloading?"#ccc":S.primary,color:"#fff",border:"none",fontSize:11,cursor:downloading?"default":"pointer",display:"flex",alignItems:"center",gap:6}},
+        React.createElement("svg",{width:14,height:14,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
+          React.createElement("path",{d:"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"}),
+          React.createElement("polyline",{points:"7 11 12 16 17 11"}),
+          React.createElement("line",{x1:12,y1:16,x2:12,y2:4})),
+        downloading?"DOWNLOADING...":"DOWNLOAD ALL")
+    ),
     loading?React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.text+"55",padding:20,textAlign:"center"}},"Loading..."):
     photos.length===0?React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.text+"55",padding:20,textAlign:"center"}},"No photos uploaded yet"):
     React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}},
       photos.map(function(p,i){
         return React.createElement("div",{key:i,style:{position:"relative"}},
           React.createElement("img",{src:p.url,alt:"",style:{width:"100%",aspectRatio:"1",objectFit:"cover",display:"block"}}),
-          React.createElement("button",{onClick:function(){deletePhoto(p.name);},
-            style:{position:"absolute",top:4,right:4,width:24,height:24,borderRadius:"50%",
-              background:"rgba(0,0,0,0.6)",color:"#fff",border:"none",cursor:"pointer",fontSize:14,
-              display:"flex",alignItems:"center",justifyContent:"center"}},"\u00d7")
+          React.createElement("div",{style:{position:"absolute",top:4,right:4,display:"flex",gap:4}},
+            React.createElement("button",{onClick:function(){downloadPhoto(p.url,p.name);},
+              style:{width:24,height:24,borderRadius:"50%",background:"rgba(0,0,0,0.6)",color:"#fff",border:"none",cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}},
+              React.createElement("svg",{width:12,height:12,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},
+                React.createElement("polyline",{points:"7 11 12 16 17 11"}),
+                React.createElement("line",{x1:12,y1:16,x2:12,y2:4}))),
+            React.createElement("button",{onClick:function(){deletePhoto(p.name);},
+              style:{width:24,height:24,borderRadius:"50%",background:"rgba(0,0,0,0.6)",color:"#fff",border:"none",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}},"\u00d7")
+          )
         );
       })
     )
