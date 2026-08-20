@@ -608,7 +608,8 @@ function PhotosView(){
           React.createElement("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},
             React.createElement("polyline",{points:"9 6 15 12 9 18"}))):null;})(),
       (function(){var idx=photos.findIndex(function(p){return p.name===viewPhoto.name;});
-        return React.createElement("div",{style:{position:"absolute",bottom:16,left:"50%",transform:"translateX(-50%)",display:"flex",alignItems:"center",gap:16}},
+        return React.createElement("div",{style:{position:"absolute",bottom:16,left:"50%",transform:"translateX(-50%)",display:"flex",flexDirection:"column",alignItems:"center",gap:8}},
+          React.createElement("div",{style:{color:"rgba(255,255,255,0.5)",fontFamily:"'DM Sans',sans-serif",fontSize:12}},(idx+1)+" / "+photos.length),
           React.createElement("button",{onClick:function(e){
             e.stopPropagation();
             downloadWithWatermark(viewPhoto.url,viewPhoto.name);
@@ -617,8 +618,7 @@ function PhotosView(){
               React.createElement("path",{d:"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"}),
               React.createElement("polyline",{points:"7 11 12 16 17 11"}),
               React.createElement("line",{x1:12,y1:16,x2:12,y2:4})),
-            "DOWNLOAD"),
-          React.createElement("div",{style:{color:"rgba(255,255,255,0.5)",fontFamily:"'DM Sans',sans-serif",fontSize:12}},(idx+1)+" / "+photos.length)
+            "DOWNLOAD")
         );})(),
       React.createElement(SlidePhoto,{key:viewPhoto.name,photo:viewPhoto,dir:slideDir.current})
     )
@@ -769,7 +769,7 @@ function App(){
         React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:11,color:S.primary,marginBottom:16}},"ADMIN ACCESS"),
         React.createElement("input",{value:pin,onChange:function(e){setPin(e.target.value);setPinErr(false);},
           onKeyDown:function(e){if(e.key==="Enter"){if(pin===PIN){setMode("admin");setPinErr(false);}else{setPinErr(true);}}},
-          placeholder:"PIN",type:"password",
+          placeholder:"PIN",type:"tel",inputMode:"numeric",pattern:"[0-9]*",autoComplete:"off",name:"wedding-pin","data-lpignore":"true","data-form-type":"other",
           style:{padding:14,border:"1px solid "+(pinErr?"#c55":"#d5e3d9"),fontSize:20,textAlign:"center",width:"100%",fontFamily:"'DM Sans',sans-serif",letterSpacing:10,boxSizing:"border-box"}}),
         pinErr&&React.createElement("p",{style:{fontFamily:"'DM Sans',sans-serif",color:"#a55",fontSize:12,marginTop:8}},"Incorrect PIN"),
         React.createElement("div",{style:{display:"flex",gap:8,marginTop:16}},
