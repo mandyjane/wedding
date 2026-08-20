@@ -509,9 +509,10 @@ function PhotosView(){
   var[loading,setLoading]=useState(true);
   var[uploading,setUploading]=useState(false);
   var[viewPhoto,setViewPhotoRaw]=useState(null);
+  var scrollY=React.useRef(0);
   function setViewPhoto(p){
-    if(p){document.body.style.overflow="hidden";document.body.style.position="fixed";document.body.style.width="100%";document.body.style.top="-"+window.scrollY+"px";}
-    else{var top=document.body.style.top;document.body.style.overflow="";document.body.style.position="";document.body.style.width="";document.body.style.top="";window.scrollTo(0,parseInt(top||"0")*-1);}
+    if(p){scrollY.current=window.scrollY;document.documentElement.style.overflow="hidden";document.body.style.overflow="hidden";}
+    else{document.documentElement.style.overflow="";document.body.style.overflow="";window.scrollTo(0,scrollY.current);}
     setViewPhotoRaw(p);
   }
   var cameraRef=React.useRef(null);
@@ -621,33 +622,17 @@ function PhotosView(){
             onClick:function(e){
               e.stopPropagation();
               sbTrackDownload(viewPhoto.name);
-              var btn=e.currentTarget;
-              btn.textContent="Saving...";
-              fetch(viewPhoto.url,{mode:"cors",credentials:"omit"}).then(function(r){
-                if(!r.ok)throw new Error("HTTP "+r.status);
-                return r.blob();
-              }).then(function(blob){
-                if(navigator.canShare&&navigator.canShare({files:[new File([blob],viewPhoto.name,{type:blob.type})]})){
-                  navigator.share({files:[new File([blob],viewPhoto.name,{type:blob.type})]}).then(function(){
-                    btn.textContent="Saved!";setTimeout(function(){btn.textContent="SAVE";},2000);
-                  }).catch(function(){btn.textContent="SAVE";});
-                }else{
-                  var blobUrl=URL.createObjectURL(blob);
-                  var a=document.createElement("a");a.href=blobUrl;a.download=viewPhoto.name||"wedding-photo.jpg";
-                  document.body.appendChild(a);a.click();
-                  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(blobUrl);},5000);
-                  btn.textContent="Saved!";setTimeout(function(){btn.textContent="SAVE";},2000);
-                }
-              }).catch(function(err){
-                btn.textContent="SAVE";
-                alert("Save failed: "+err.message+". Long press the photo instead to save it.");
-              });
+              var a=getDlAnchor();
+              a.href=viewPhoto.url+"?download=";
+              a.download=viewPhoto.name||"wedding-photo.jpg";
+              a.target="_self";
+              a.click();
             },
             style:{background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",padding:"8px 14px",cursor:"pointer",fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:"0.14em",display:"flex",alignItems:"center",gap:6,WebkitTapHighlightColor:"transparent"}},
             React.createElement("svg",{width:14,height:14,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
-              React.createElement("path",{d:"M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"}),
-              React.createElement("polyline",{points:"16 6 12 2 8 6"}),
-              React.createElement("line",{x1:12,y1:2,x2:12,y2:15})),
+              React.createElement("path",{d:"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"}),
+              React.createElement("polyline",{points:"7 11 12 16 17 11"}),
+              React.createElement("line",{x1:12,y1:16,x2:12,y2:4})),
             "SAVE")
         );})(),
       React.createElement(SlidePhoto,{key:viewPhoto.name,photo:viewPhoto,dir:slideDir.current})
