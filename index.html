@@ -422,7 +422,7 @@ function sbListPhotos(){
   }).then(function(r){return r.json();})
   .then(function(files){
     return files.filter(function(f){return f.name&&!f.name.startsWith(".")&&f.name!=="app-config.json"&&f.name!=="download-counts.json";}).map(function(f){
-      return {name:f.name,url:SB_URL+"/storage/v1/object/public/"+SB_BUCKET+"/"+f.name,created:f.created_at};
+      return {name:f.name,url:SB_URL+"/storage/v1/object/public/"+SB_BUCKET+"/"+f.name,created:f.created_at,size:f.metadata&&f.metadata.size||0};
     });
   });
 }
@@ -456,11 +456,10 @@ function sbTrackDownload(photoName){
     var jsonStr=JSON.stringify(counts);
     return fetch(SB_URL+"/storage/v1/object/"+SB_BUCKET+"/"+SB_DL_KEY,{
       method:"POST",
-      headers:Object.assign({"Content-Type":"application/octet-stream","x-upsert":"true"},sbHeaders()),
+      headers:Object.assign({"Content-Type":"application/json","x-upsert":"true"},sbHeaders()),
       body:jsonStr
     }).then(function(r){
-      if(!r.ok){r.text().then(function(t){console.error("Track download failed:",r.status,t);});}
-      else{console.log("Download tracked:",photoName,counts[photoName]);}
+      if(!r.ok)r.text().then(function(t){console.error("Track download failed:",r.status,t);});
     });
   }).catch(function(e){console.error("Track download error:",e);});
 }
@@ -710,6 +709,25 @@ function AdminPhotos(){
           React.createElement("line",{x1:12,y1:16,x2:12,y2:4})),
         downloading?"DOWNLOADING...":"DOWNLOAD ALL")
     ),
+    (function(){
+      var totalBytes=photos.reduce(function(sum,p){return sum+(p.size||0);},0);
+      var limitBytes=1073741824;
+      var pct=Math.min(100,(totalBytes/limitBytes)*100);
+      var usedMB=(totalBytes/1048576).toFixed(1);
+      var limitGB=(limitBytes/1073741824).toFixed(0);
+      var barColor=pct>90?"#c55":pct>70?"#c90":S.sage;
+      return React.createElement("div",{style:{marginBottom:16}},
+        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",fontFamily:"'DM Sans',sans-serif",fontSize:11,color:S.text+"77",marginBottom:4}},
+          React.createElement("span",null,usedMB+" MB used"),
+          React.createElement("span",null,limitGB+" GB limit"),
+        ),
+        React.createElement("div",{style:{height:6,background:"#e0ebe3",width:"100%",overflow:"hidden"}},
+          React.createElement("div",{style:{height:"100%",width:pct+"%",background:barColor,transition:"width 0.3s ease"}})
+        ),
+        React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:S.text+"55",marginTop:4}},
+          photos.length+" photo"+(photos.length!==1?"s":"")+" \u2014 "+pct.toFixed(1)+"% of storage used")
+      );
+    })(),
     loading?React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.text+"55",padding:20,textAlign:"center"}},"Loading..."):
     photos.length===0?React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.text+"55",padding:20,textAlign:"center"}},"No photos uploaded yet"):
     React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}},
