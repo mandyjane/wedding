@@ -403,6 +403,120 @@ function AdminGuestEditor({guests,setGuests}){
   );
 }
 
+/* ── SUPABASE CONFIG ── */
+var SB_URL="https://fmselnnucbefsvfxmsbc.supabase.co";
+var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtc2Vsbm51Y2JlZnN2Znhtc2JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxODY0NjcsImV4cCI6MjEwMjc2MjQ2N30.caNQg2PUe1tq0ca46RO0jP7ANB_hYMOU58tv4WqweHE";
+var SB_BUCKET="wedding-photos";
+
+function sbHeaders(){return {"Authorization":"Bearer "+SB_KEY,"apikey":SB_KEY};}
+
+function sbUpload(file){
+  var ext=file.name.split(".").pop()||"jpg";
+  var name=Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+ext;
+  return fetch(SB_URL+"/storage/v1/object/"+SB_BUCKET+"/"+name,{
+    method:"POST",
+    headers:Object.assign({"Content-Type":file.type,"x-upsert":"true"},sbHeaders()),
+    body:file
+  }).then(function(r){
+    if(!r.ok)throw new Error("Upload failed: "+r.status);
+    return SB_URL+"/storage/v1/object/public/"+SB_BUCKET+"/"+name;
+  });
+}
+
+function sbListPhotos(){
+  return fetch(SB_URL+"/storage/v1/object/list/"+SB_BUCKET,{
+    method:"POST",
+    headers:Object.assign({"Content-Type":"application/json"},sbHeaders()),
+    body:JSON.stringify({prefix:"",limit:500,offset:0,sortBy:{column:"created_at",order:"desc"}})
+  }).then(function(r){return r.json();})
+  .then(function(files){
+    return files.filter(function(f){return f.name&&!f.name.startsWith(".");}).map(function(f){
+      return {name:f.name,url:SB_URL+"/storage/v1/object/public/"+SB_BUCKET+"/"+f.name,created:f.created_at};
+    });
+  });
+}
+
+/* ── PHOTOS ── */
+function PhotosView(){
+  var[photos,setPhotos]=useState([]);
+  var[loading,setLoading]=useState(true);
+  var[uploading,setUploading]=useState(false);
+  var[viewPhoto,setViewPhoto]=useState(null);
+  var cameraRef=React.useRef(null);
+  var uploadRef=React.useRef(null);
+
+  function loadPhotos(){
+    sbListPhotos().then(function(p){setPhotos(p);setLoading(false);}).catch(function(){setLoading(false);});
+  }
+
+  useEffect(function(){loadPhotos();},[]);
+
+  function handleFiles(files){
+    if(!files||!files.length)return;
+    setUploading(true);
+    var promises=Array.from(files).map(function(f){return sbUpload(f);});
+    Promise.all(promises).then(function(){
+      setUploading(false);
+      loadPhotos();
+    }).catch(function(e){
+      setUploading(false);
+      alert("Upload failed. Please try again.");
+    });
+  }
+
+  return React.createElement("div",{style:{padding:"24px",maxWidth:480,margin:"0 auto"}},
+    React.createElement("div",{style:{textAlign:"center",marginBottom:24}},
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},"Share Your Photos"),
+      React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}}),
+      React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",marginTop:8}},"Capture the moment and share with everyone")
+    ),
+
+    React.createElement("div",{style:{display:"flex",gap:12,marginBottom:24}},
+      React.createElement("input",{ref:cameraRef,type:"file",accept:"image/*,video/*",capture:"environment",
+        style:{display:"none"},onChange:function(e){handleFiles(e.target.files);e.target.value="";}}),
+      React.createElement("input",{ref:uploadRef,type:"file",accept:"image/*,video/*",multiple:true,
+        style:{display:"none"},onChange:function(e){handleFiles(e.target.files);e.target.value="";}}),
+
+      React.createElement("button",{onClick:function(){cameraRef.current.click();},disabled:uploading,
+        style:{flex:1,padding:"14px 8px",background:S.primary,color:"#fff",border:"none",
+          fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:"0.14em",cursor:"pointer",
+          opacity:uploading?0.5:1}},
+        "\ud83d\udcf7  TAKE PHOTO"),
+
+      React.createElement("button",{onClick:function(){uploadRef.current.click();},disabled:uploading,
+        style:{flex:1,padding:"14px 8px",background:"#fff",color:S.primary,border:"1px solid "+S.primary,
+          fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:"0.14em",cursor:"pointer",
+          opacity:uploading?0.5:1}},
+        "\ud83d\uddbc  UPLOAD")
+    ),
+
+    uploading&&React.createElement("div",{style:{textAlign:"center",padding:16,fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.sage}},"Uploading..."),
+
+    loading?React.createElement("div",{style:{textAlign:"center",padding:40,fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.text+"55"}},"Loading photos..."):
+    photos.length===0?React.createElement("div",{style:{textAlign:"center",padding:40}},
+      React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.text+"55"}},"No photos yet \u2014 be the first to share!")):
+    React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4}},
+      photos.map(function(p,i){
+        var isVideo=/\.(mp4|mov|webm|avi)$/i.test(p.name);
+        return React.createElement("div",{key:i,onClick:function(){setViewPhoto(p);},
+          style:{aspectRatio:"1",overflow:"hidden",cursor:"pointer",background:"#f5f9f6",position:"relative"}},
+          isVideo?React.createElement("video",{src:p.url,style:{width:"100%",height:"100%",objectFit:"cover"},muted:true}):
+          React.createElement("img",{src:p.url,alt:"Wedding photo",loading:"lazy",style:{width:"100%",height:"100%",objectFit:"cover"}}),
+          isVideo&&React.createElement("div",{style:{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
+            color:"#fff",fontSize:24,textShadow:"0 1px 4px rgba(0,0,0,0.5)"}},"\u25b6")
+        );
+      })
+    ),
+
+    viewPhoto&&React.createElement("div",{onClick:function(){setViewPhoto(null);},
+      style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300,cursor:"pointer"}},
+      /\.(mp4|mov|webm|avi)$/i.test(viewPhoto.name)?
+        React.createElement("video",{src:viewPhoto.url,controls:true,autoPlay:true,style:{maxWidth:"95%",maxHeight:"90vh"},onClick:function(e){e.stopPropagation();}}):
+        React.createElement("img",{src:viewPhoto.url,alt:"Wedding photo",style:{maxWidth:"95%",maxHeight:"90vh",objectFit:"contain"}})
+    )
+  );
+}
+
 /* ── MAIN APP ── */
 function App(){
   var[guests,setGuests]=useState(GUESTS);
@@ -433,6 +547,7 @@ function App(){
     {id:"beverages",label:"BEVERAGES"},
     {id:"menu",label:"MENU"},
     {id:"seatingplan",label:"SEATING"},
+    {id:"photos",label:"PHOTOS"},
   ];
 
   var adminTabs=[
@@ -443,9 +558,9 @@ function App(){
     {id:"settings",label:"SETTINGS"},
   ];
 
-  useEffect(function(){try{var d=localStorage.getItem("la-wedding-v15");if(d){var p=JSON.parse(d);if(p.guests)setGuests(p.guests);if(p.timeline)setTimeline(p.timeline);if(p.menuData)setMenuData(p.menuData);if(p.bevData)setBevData(p.bevData);if(p.useAltBot)setUseAltBot(p.useAltBot);if(p.useAltTop)setUseAltTop(p.useAltTop);}}catch(e){}},
+  useEffect(function(){try{var d=localStorage.getItem("la-wedding-v16");if(d){var p=JSON.parse(d);if(p.guests)setGuests(p.guests);if(p.timeline)setTimeline(p.timeline);if(p.menuData)setMenuData(p.menuData);if(p.bevData)setBevData(p.bevData);if(p.useAltBot)setUseAltBot(p.useAltBot);if(p.useAltTop)setUseAltTop(p.useAltTop);}}catch(e){}},
   []);
-  useEffect(function(){try{localStorage.setItem("la-wedding-v15",JSON.stringify({guests:guests,timeline:timeline,menuData:menuData,bevData:bevData,useAltBot:useAltBot,useAltTop:useAltTop}));}catch(e){}},
+  useEffect(function(){try{localStorage.setItem("la-wedding-v16",JSON.stringify({guests:guests,timeline:timeline,menuData:menuData,bevData:bevData,useAltBot:useAltBot,useAltTop:useAltTop}));}catch(e){}},
   [guests,timeline,menuData,bevData,useAltBot,useAltTop]);
 
   var ist={padding:"10px 14px",border:"1px solid #d5e3d9",fontSize:14,fontFamily:"'DM Sans',sans-serif",background:"#fff",width:"100%",boxSizing:"border-box"};
@@ -481,6 +596,7 @@ function App(){
       tab==="beverages"&&React.createElement(BeveragesView,{data:bevData}),
       tab==="timeline"&&React.createElement(TimelineView,{data:timeline}),
       tab==="seatingplan"&&React.createElement("div",{id:"seating-plan-section"},React.createElement(FloorplanView,{highlightGuest:highlightGuest})),
+      tab==="photos"&&React.createElement(PhotosView),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"8px auto 20px",opacity:0.35}}),
       React.createElement("div",{style:{textAlign:"center",paddingBottom:40}},
         React.createElement("img",{src:useAltBot?BOT_IMG_ALT:BOT_IMG,alt:"Liam and Amanda Metcalf — 14 October 2026",
