@@ -621,11 +621,27 @@ function PhotosView(){
             onClick:function(e){
               e.stopPropagation();
               sbTrackDownload(viewPhoto.name);
-              if(navigator.share){
-                navigator.share({title:"Wedding Photo",url:viewPhoto.url}).catch(function(){});
-              }else{
-                window.open(viewPhoto.url,"_blank");
-              }
+              var btn=e.currentTarget;
+              btn.textContent="Saving...";
+              fetch(viewPhoto.url,{mode:"cors",credentials:"omit"}).then(function(r){
+                if(!r.ok)throw new Error("HTTP "+r.status);
+                return r.blob();
+              }).then(function(blob){
+                if(navigator.canShare&&navigator.canShare({files:[new File([blob],viewPhoto.name,{type:blob.type})]})){
+                  navigator.share({files:[new File([blob],viewPhoto.name,{type:blob.type})]}).then(function(){
+                    btn.textContent="Saved!";setTimeout(function(){btn.textContent="SAVE";},2000);
+                  }).catch(function(){btn.textContent="SAVE";});
+                }else{
+                  var blobUrl=URL.createObjectURL(blob);
+                  var a=document.createElement("a");a.href=blobUrl;a.download=viewPhoto.name||"wedding-photo.jpg";
+                  document.body.appendChild(a);a.click();
+                  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(blobUrl);},5000);
+                  btn.textContent="Saved!";setTimeout(function(){btn.textContent="SAVE";},2000);
+                }
+              }).catch(function(err){
+                btn.textContent="SAVE";
+                alert("Save failed: "+err.message+". Long press the photo instead to save it.");
+              });
             },
             style:{background:"rgba(255,255,255,0.2)",border:"none",color:"#fff",padding:"8px 14px",cursor:"pointer",fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:"0.14em",display:"flex",alignItems:"center",gap:6,WebkitTapHighlightColor:"transparent"}},
             React.createElement("svg",{width:14,height:14,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
