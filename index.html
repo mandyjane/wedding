@@ -500,33 +500,7 @@ function SlidePhoto(props){
 
 function downloadWithWatermark(photoUrl,photoName){
   sbTrackDownload(photoName);
-  var img=new Image();
-  img.crossOrigin="anonymous";
-  img.onload=function(){
-    try{
-      var canvas=document.createElement("canvas");
-      canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
-      var ctx=canvas.getContext("2d");
-      ctx.drawImage(img,0,0);
-      var wm=new Image();
-      wm.onload=function(){
-        var wmW=canvas.width*0.2;
-        var wmH=wmW*(wm.naturalHeight/wm.naturalWidth);
-        ctx.globalAlpha=0.8;
-        ctx.drawImage(wm,canvas.width-wmW-20,canvas.height-wmH-20,wmW,wmH);
-        ctx.globalAlpha=1;
-        canvas.toBlob(function(blob){
-          var url=URL.createObjectURL(blob);
-          window.open(url,"_blank");
-          setTimeout(function(){URL.revokeObjectURL(url);},5000);
-        },"image/jpeg",0.92);
-      };
-      wm.onerror=function(){window.open(photoUrl+"?download=","_blank");};
-      wm.src=WATERMARK;
-    }catch(e){window.open(photoUrl+"?download=","_blank");}
-  };
-  img.onerror=function(){window.open(photoUrl+"?download=","_blank");};
-  img.src=photoUrl;
+  triggerDownload(photoUrl);
 }
 
 /* ── PHOTOS ── */
@@ -658,9 +632,17 @@ function PhotosView(){
 }
 
 /* ── ADMIN PHOTOS ── */
+function triggerDownload(url){
+  var iframe=document.createElement("iframe");
+  iframe.style.display="none";
+  iframe.src=url+"?download=";
+  document.body.appendChild(iframe);
+  setTimeout(function(){document.body.removeChild(iframe);},10000);
+}
+
 function downloadPhoto(url,name){
   sbTrackDownload(name);
-  window.open(url+"?download=","_blank");
+  triggerDownload(url);
 }
 
 function AdminPhotos(){
@@ -690,7 +672,7 @@ function AdminPhotos(){
       if(i>=photos.length){setDownloading(false);return;}
       var p=photos[i];i++;
       downloadPhoto(p.url,p.name);
-      setTimeout(next,800);
+      setTimeout(next,1200);
     }
     next();
   }
