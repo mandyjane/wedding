@@ -147,7 +147,9 @@ var DEFAULT_MENU=[
   {section:"Cocktail Hour",courses:[{name:"CANAP\u00c9S",dish:"Chef\u2019s Selection",desc:"of three (3) canap\u00e9s"}]},
   {section:"Dinner Menu",courses:[
     {name:"ENTR\u00c9E",dish:"Borrowdale Pork Belly",desc:"roasted apple ketchup, fioretto [df, gf]"},
+    {name:"",dish:"Hiramasa Kingfish Crudo",desc:"tamari-sesame dressing, avocado [df, gf]"},
     {name:"MAIN",dish:"Inglewood Organic Farm Chicken",desc:"corn puree, roasted baby gem, mustard jus [gf, df]"},
+    {name:"",dish:"Black Angus Eye Fillet MS2+ (180g)",desc:"potato pav\u00e9, blistered vine tomatoes, red wine jus [gf]"},
     {name:"DESSERT",dish:"Wedding Cake",desc:"with tea & coffee"},
   ]}
 ];
@@ -161,8 +163,12 @@ function MenuView(props){
         React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},sec.section),
         React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
       ),
-      sec.courses.map(function(c,ci){return React.createElement("div",{key:ci,style:{marginBottom:28,textAlign:"center"}},
-        React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:12,fontWeight:600}},c.name),
+      sec.courses.map(function(c,ci){
+        var nextItem=sec.courses[ci+1];
+        var hasAlt=c.name&&nextItem&&!nextItem.name;
+        return React.createElement("div",{key:ci,style:{marginBottom:c.name?12:14,marginTop:c.name&&ci>0?32:4,textAlign:"center"}},
+        c.name&&React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:hasAlt?4:12,fontWeight:600}},c.name),
+        hasAlt&&React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:S.sage+"55",fontStyle:"italic",marginBottom:12}},"alternate drop"),
         React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:18,fontWeight:500,color:S.primary,marginBottom:2}},c.dish),
         React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",fontStyle:"italic"}},c.desc)
       )})
@@ -441,7 +447,7 @@ function sbDeletePhoto(name){
 }
 
 /* ── SUPABASE CONFIG SYNC ── */
-var SB_CONFIG_KEY="app-config-v4.json";
+var SB_CONFIG_KEY="app-config-v6.json";
 var SB_DL_KEY="download-counts.json";
 
 function sbLoadDlCounts(){
