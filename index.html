@@ -847,8 +847,22 @@ function App(){
 
     mode==="guest"&&React.createElement("div",{style:{maxWidth:520,margin:"0 auto",minHeight:"100vh",background:"#fff"}},
       React.createElement("div",{style:{padding:"20px 24px 8px",textAlign:"center"}},
-        React.createElement("img",{src:useAltTop?TOP_IMG_ALT:TOP_IMG,alt:"Liam and Amanda Metcalf Wedding",
-          style:{width:"100%",maxWidth:420,display:"block",margin:"0 auto"}})),
+        React.createElement("div",{style:{position:"relative",display:"inline-block",maxWidth:420,width:"100%"}},
+          React.createElement("img",{src:useAltTop?TOP_IMG_ALT:TOP_IMG,alt:"Liam and Amanda Metcalf Wedding",
+            style:{width:"100%",display:"block"}}),
+          React.createElement("input",{id:"topCameraInput",type:"file",accept:"image/*",capture:"environment",
+            style:{display:"none"},onChange:function(e){
+              if(!e.target.files||!e.target.files.length)return;
+              var file=e.target.files[0];e.target.value="";
+              sbUpload(file).then(function(){}).catch(function(){alert("Upload failed. Please try again.");});
+            }}),
+          React.createElement("button",{onClick:function(){document.getElementById("topCameraInput").click();},
+            style:{position:"absolute",top:8,right:8,background:"none",border:"none",cursor:"pointer",padding:4,WebkitTapHighlightColor:"transparent"}},
+            React.createElement("svg",{width:24,height:24,viewBox:"0 0 24 24",fill:"none",stroke:"#80b090",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
+              React.createElement("path",{d:"M5 7h1a2 2 0 0 0 2-2 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2"}),
+              React.createElement("circle",{cx:12,cy:13,r:3})))
+        )
+      ),
       React.createElement(SeatSearch,{showOnPlan:showOnPlan}),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"8px auto 20px",opacity:0.35}}),
       React.createElement("div",{style:{padding:"0 24px",marginBottom:0}},
