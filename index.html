@@ -296,6 +296,7 @@ function ZoomableImage(props){
       s.startDist=getDistance(e.touches[0],e.touches[1]);
       s.startScale=s.scale;
     }else if(e.touches.length===1&&s.scale>1){
+      e.preventDefault();
       s.isDragging=true;
       s.isPinching=false;
       s.dragStartX=e.touches[0].clientX;
@@ -309,6 +310,7 @@ function ZoomableImage(props){
       if(s.scale>1){s.scale=1;s.x=0;s.y=0;}
       else{s.scale=2.5;s.x=0;s.y=0;}
       applyTransform();
+      containerRef.current.style.touchAction=s.scale>1?"none":"pan-y";
     }
     s.lastTap=now;
   }
@@ -321,6 +323,7 @@ function ZoomableImage(props){
       s.scale=Math.max(1,Math.min(5,s.startScale*(dist/s.startDist)));
       clampPosition();
       applyTransform();
+      containerRef.current.style.touchAction=s.scale>1?"none":"pan-y";
     }else if(s.isDragging&&e.touches.length===1&&s.scale>1){
       e.preventDefault();
       s.x=s.dragOffsetX+(e.touches[0].clientX-s.dragStartX);
@@ -334,7 +337,7 @@ function ZoomableImage(props){
     var s=stateRef.current;
     s.isPinching=false;
     if(e.touches.length===0)s.isDragging=false;
-    if(s.scale<=1){s.scale=1;s.x=0;s.y=0;applyTransform();}
+    if(s.scale<=1){s.scale=1;s.x=0;s.y=0;applyTransform();containerRef.current.style.touchAction="pan-y";}
   }
 
   return React.createElement("div",{
@@ -342,7 +345,7 @@ function ZoomableImage(props){
     onTouchStart:onTouchStart,
     onTouchMove:onTouchMove,
     onTouchEnd:onTouchEnd,
-    style:{maxWidth:480,margin:"0 auto",border:"1px solid #e0ebe3",overflow:"hidden",touchAction:"pan-x pan-y",position:"relative"}
+    style:{maxWidth:480,margin:"0 auto",border:"1px solid #e0ebe3",overflow:"hidden",touchAction:"pan-y",position:"relative"}
   },
     React.createElement("div",{
       ref:imgRef,
