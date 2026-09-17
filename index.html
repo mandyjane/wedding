@@ -431,7 +431,7 @@ function sbListPhotos(){
     body:JSON.stringify({prefix:"",limit:500,offset:0,sortBy:{column:"created_at",order:"desc"}})
   }).then(function(r){return r.json();})
   .then(function(files){
-    return files.filter(function(f){return f.name&&!f.name.startsWith(".")&&f.name!=="app-config.json"&&f.name!=="download-counts.json";}).map(function(f){
+    return files.filter(function(f){return f.name&&!f.name.startsWith(".")&&!f.name.endsWith(".json");}).map(function(f){
       return {name:f.name,url:SB_URL+"/storage/v1/object/public/"+SB_BUCKET+"/"+f.name,created:f.created_at,size:f.metadata&&f.metadata.size||0};
     });
   });
