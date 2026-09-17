@@ -198,7 +198,7 @@ function BeveragesView(props){
       React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:500}},"Beverages"),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
     ),
-    bev.sections.map(function(s,si){return React.createElement("div",{key:si,style:{marginBottom:26,textAlign:"center"}},
+    bev.sections.map(function(s,si){return React.createElement("div",{key:si,style:{marginBottom:36,textAlign:"center"}},
       React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:12,fontWeight:600}},s.name),
       s.items.map(function(item,ii){return React.createElement("div",{key:ii,style:{
         fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:400,color:S.primary,marginBottom:8,lineHeight:1.3,
