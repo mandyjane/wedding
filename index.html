@@ -54,7 +54,7 @@ function Tabs({tabs,active,onChange}){
   return React.createElement("div",{style:{display:"flex",border:"1px solid #e0ebe3",margin:"0 auto",maxWidth:440}},
     tabs.map(t=>React.createElement("button",{key:t.id,onClick:()=>onChange(t.id),style:{
       flex:1,padding:"11px 0",border:"none",cursor:"pointer",
-      ...S.spaced,fontSize:9,letterSpacing:"0.12em",fontWeight:active===t.id?600:500,
+      ...S.spaced,fontSize:9,letterSpacing:"0.05em",fontWeight:active===t.id?600:500,
       background:active===t.id?"#f0f6f1":"transparent",
       color:active===t.id?S.primary:S.text+"aa",
       transition:"all 0.2s",borderBottom:active===t.id?"2px solid "+S.sage:"2px solid transparent",
