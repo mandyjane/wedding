@@ -559,7 +559,7 @@ function PhotosView(){
     ),
 
     React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10,marginBottom:24}},
-      React.createElement("input",{ref:cameraRef,type:"file",accept:"image/*",capture:"environment",
+      React.createElement("input",{ref:cameraRef,type:"file",accept:"image/*,video/*",capture:true,
         style:{display:"none"},onChange:function(e){handleFiles(e.target.files);e.target.value="";}}),
       React.createElement("input",{ref:uploadRef,type:"file",accept:"image/*,video/*",multiple:true,
         style:{display:"none"},onChange:function(e){handleFiles(e.target.files);e.target.value="";}}),
@@ -854,12 +854,23 @@ function App(){
         React.createElement("div",{style:{position:"relative",display:"inline-block",maxWidth:420,width:"100%"}},
           React.createElement("img",{src:useAltTop?TOP_IMG_ALT:TOP_IMG,alt:"Liam and Amanda Metcalf Wedding",
             style:{width:"100%",display:"block"}}),
-          React.createElement("input",{id:"topCameraInput",type:"file",accept:"image/*",capture:"environment",
+          React.createElement("input",{id:"topCameraInput",type:"file",accept:"image/*,video/*",capture:true,
             style:{display:"none"},onChange:function(e){
               if(!e.target.files||!e.target.files.length)return;
               var file=e.target.files[0];e.target.value="";
-              sbUpload(file).then(function(){setTab("photos");}).catch(function(){alert("Upload failed. Please try again.");});
+              document.getElementById("topCameraUploading").style.display="flex";
+              sbUpload(file).then(function(){
+                document.getElementById("topCameraUploading").style.display="none";
+                setTab("photos");
+                setTimeout(function(){window.scrollTo({top:0,behavior:"smooth"});},100);
+              }).catch(function(){
+                document.getElementById("topCameraUploading").style.display="none";
+                alert("Upload failed. Please try again.");
+              });
             }}),
+          React.createElement("div",{id:"topCameraUploading",style:{display:"none",position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",alignItems:"center",justifyContent:"center",zIndex:400}},
+            React.createElement("div",{style:{background:"#fff",padding:"24px 32px",textAlign:"center"}},
+              React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:S.primary}},"Uploading photo..."))),
           React.createElement("button",{onClick:function(){document.getElementById("topCameraInput").click();},
             style:{position:"absolute",top:8,right:8,background:"none",border:"none",cursor:"pointer",padding:4,WebkitTapHighlightColor:"transparent"}},
             React.createElement("svg",{width:24,height:24,viewBox:"0 0 24 24",fill:"none",stroke:"#80b090",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
