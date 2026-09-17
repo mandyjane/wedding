@@ -54,9 +54,9 @@ function Tabs({tabs,active,onChange}){
   return React.createElement("div",{style:{display:"flex",border:"1px solid #e0ebe3",margin:"0 auto",maxWidth:440}},
     tabs.map(t=>React.createElement("button",{key:t.id,onClick:()=>onChange(t.id),style:{
       flex:1,padding:"11px 0",border:"none",cursor:"pointer",
-      ...S.spaced,fontSize:9,letterSpacing:"0.12em",fontWeight:active===t.id?600:400,
+      ...S.spaced,fontSize:9,letterSpacing:"0.12em",fontWeight:active===t.id?600:500,
       background:active===t.id?"#f0f6f1":"transparent",
-      color:active===t.id?S.primary:S.text+"77",
+      color:active===t.id?S.primary:S.text+"aa",
       transition:"all 0.2s",borderBottom:active===t.id?"2px solid "+S.sage:"2px solid transparent",
     }},t.label))
   );
@@ -164,7 +164,7 @@ function MenuView(props){
     menu.map(function(sec,si){return React.createElement(React.Fragment,{key:si},
       si>0&&React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"0 auto 28px",opacity:0.25}}),
       React.createElement("div",{style:{textAlign:"center",marginBottom:28}},
-        React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},sec.section),
+        React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:500}},sec.section),
         React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
       ),
       sec.courses.map(function(c,ci){
@@ -195,7 +195,7 @@ function BeveragesView(props){
   var bev=props.data||DEFAULT_BEV;
   return React.createElement("div",{style:{padding:"24px",maxWidth:420,margin:"0 auto"}},
     React.createElement("div",{style:{textAlign:"center",marginBottom:28}},
-      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},"Beverages"),
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:500}},"Beverages"),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
     ),
     bev.sections.map(function(s,si){return React.createElement("div",{key:si,style:{marginBottom:26,textAlign:"center"}},
@@ -214,7 +214,7 @@ function TimelineView(props){
   var tl=props.data||TIMELINE;
   return React.createElement("div",{style:{padding:"24px",maxWidth:400,margin:"0 auto"}},
     React.createElement("div",{style:{textAlign:"center",marginBottom:28}},
-      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},"Order of the Day"),
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:500}},"Order of the Day"),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
     ),
     React.createElement("div",{style:{position:"relative"}},
@@ -246,7 +246,7 @@ function FloorplanView(props){
 
   return React.createElement("div",{style:{padding:"24px"}},
     React.createElement("div",{style:{textAlign:"center",marginBottom:20}},
-      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},"Seating Plan"),
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:500}},"Seating Plan"),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}}),
       guest&&coords?React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.sage,marginTop:8}},
         guest.name+" \u2014 "+(guest.table==="Bridal"?"Bridal Table":"Table "+guest.table))
@@ -553,7 +553,7 @@ function PhotosView(){
 
   return React.createElement("div",{style:{padding:"24px",maxWidth:480,margin:"0 auto"}},
     React.createElement("div",{style:{textAlign:"center",marginBottom:24}},
-      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:300}},"Share Your Photos"),
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:500}},"Share Your Photos"),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}}),
       React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",marginTop:8}},"Capture the moment and share with everyone")
     ),
