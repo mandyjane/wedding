@@ -362,13 +362,14 @@ function ZoomableImage(props){
       },
         React.createElement("defs",null,
           React.createElement("style",null,
-            "@keyframes pulse{0%{r:"+((props.highlight.r||22)+12)+";opacity:0.6}100%{r:"+((props.highlight.r||22)+28)+";opacity:0}}"+
-            "@keyframes pulse2{0%{r:"+((props.highlight.r||22)+6)+";opacity:0.4}100%{r:"+((props.highlight.r||22)+18)+";opacity:0}}"
+            "@keyframes pulse{0%{r:"+((props.highlight.r||22)+14)+";opacity:0.7}100%{r:"+((props.highlight.r||22)+30)+";opacity:0}}"+
+            "@keyframes pulse2{0%{r:"+((props.highlight.r||22)+8)+";opacity:0.5}100%{r:"+((props.highlight.r||22)+22)+";opacity:0}}"
           )
         ),
-        React.createElement("circle",{cx:props.highlight.x,cy:props.highlight.y,r:(props.highlight.r||22)+2,fill:"rgba(128,176,144,0.15)",stroke:"#5a7d62",strokeWidth:3}),
-        React.createElement("circle",{cx:props.highlight.x,cy:props.highlight.y,r:(props.highlight.r||22)+12,fill:"none",stroke:"#80b090",strokeWidth:2,style:{animation:"pulse 1.5s ease-out infinite"}}),
-        React.createElement("circle",{cx:props.highlight.x,cy:props.highlight.y,r:(props.highlight.r||22)+6,fill:"none",stroke:"#80b090",strokeWidth:1.5,style:{animation:"pulse2 1.5s ease-out infinite 0.3s"}})
+        React.createElement("circle",{cx:props.highlight.x,cy:props.highlight.y,r:(props.highlight.r||22)+4,fill:"rgba(128,176,144,0.25)",stroke:"#5a7d62",strokeWidth:4}),
+        React.createElement("circle",{cx:props.highlight.x,cy:props.highlight.y,r:(props.highlight.r||22)+14,fill:"none",stroke:"#80b090",strokeWidth:2,style:{animation:"pulse 1.5s ease-out infinite"}}),
+        React.createElement("circle",{cx:props.highlight.x,cy:props.highlight.y,r:(props.highlight.r||22)+24,fill:"none",stroke:"#80b090",strokeWidth:1,style:{animation:"pulse 1.5s ease-out infinite 0.4s"}}),
+        React.createElement("circle",{cx:props.highlight.x,cy:props.highlight.y,r:(props.highlight.r||22)+8,fill:"none",stroke:"#80b090",strokeWidth:1.5,style:{animation:"pulse2 1.5s ease-out infinite 0.2s"}})
       )
     )
   );
