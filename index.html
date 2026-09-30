@@ -82,12 +82,14 @@ function SeatSearch(props){
 
   return React.createElement("div",{style:{padding:"0 24px 24px",textAlign:"center"}},
     React.createElement("div",{style:{...S.spaced,fontSize:11,color:S.sage,marginBottom:14}},"FIND YOUR SEAT"),
-    React.createElement("div",{style:{maxWidth:360,margin:"0 auto"}},
+    React.createElement("div",{style:{maxWidth:360,margin:"0 auto",position:"relative"}},
       React.createElement("input",{value:query,
         onChange:e=>doSearch(e.target.value),
         placeholder:"Enter your name...",
-        style:{width:"100%",padding:"14px 16px",border:"1px solid #d5e3d9",fontSize:15,...S.sans,background:"#fff",color:S.text,boxSizing:"border-box"}
-      })
+        style:{width:"100%",padding:"14px 40px 14px 16px",border:"1px solid #d5e3d9",fontSize:15,...S.sans,background:"#fff",color:S.text,boxSizing:"border-box"}
+      }),
+      query&&React.createElement("button",{onClick:function(){doSearch("");},
+        style:{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",padding:4,color:S.text+"66",fontSize:18,lineHeight:1,WebkitTapHighlightColor:"transparent"}},"\u00d7")
     ),
 
     /* Multiple matches — tap to select */
