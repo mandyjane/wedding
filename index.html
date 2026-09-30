@@ -155,7 +155,12 @@ var DEFAULT_MENU=[
     {name:"",dish:"Hiramasa Kingfish Crudo",desc:"tamari-sesame dressing, avocado [df, gf]"},
     {name:"MAIN",dish:"Inglewood Organic Farm Chicken",desc:"corn puree, roasted baby gem, mustard jus [gf, df]"},
     {name:"",dish:"Black Angus Eye Fillet MS2+ (180g)",desc:"potato pav\u00e9, blistered vine tomatoes, red wine jus [gf]"},
-    {name:"DESSERT",dish:"Wedding Cake",desc:"with tea & coffee"},
+    {name:"DESSERT",dish:"Wedding Cake",desc:"Vanilla Biscoff\nserved with Grant Burge Aged Tawny Port"},
+    {name:"TEA & COFFEE",dish:"Bear Bones Coffee",desc:"& selection of tea"},
+  ]},
+  {section:"Kids Menu",courses:[
+    {name:"KIDS MAINS",dish:"Beef Burger",desc:"cheddar cheese, lettuce, tomato, burger sauce, chips"},
+    {name:"KIDS DESSERT",dish:"Italian Gelato",desc:"with chocolate fudge sauce"},
   ]}
 ];
 
@@ -163,7 +168,7 @@ function MenuView(props){
   var menu=props.data||DEFAULT_MENU;
   return React.createElement("div",{style:{padding:"24px",maxWidth:420,margin:"0 auto"}},
     menu.map(function(sec,si){return React.createElement(React.Fragment,{key:si},
-      si>0&&React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"0 auto 28px",opacity:0.25}}),
+      si>0&&React.createElement("div",{style:{width:1,height:20,background:S.sage,margin:"0 auto 28px",opacity:0.3}}),
       React.createElement("div",{style:{textAlign:"center",marginBottom:28}},
         React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:500}},sec.section),
         React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}})
@@ -175,7 +180,8 @@ function MenuView(props){
         c.name&&React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:hasAlt?4:12,fontWeight:600}},c.name),
         hasAlt&&React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:S.sage+"55",fontStyle:"italic",marginBottom:12}},"alternate drop"),
         React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:18,fontWeight:500,color:S.primary,marginBottom:2}},c.dish),
-        React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",fontStyle:"italic"}},c.desc)
+        React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",fontStyle:"italic"}},
+          c.desc.indexOf("\n")>-1?c.desc.split("\n").map(function(line,li){return React.createElement("div",{key:li,style:{marginBottom:li<c.desc.split("\n").length-1?2:0}},line);}):c.desc)
       )})
     );})
   );
@@ -456,7 +462,7 @@ function sbDeletePhoto(name){
 }
 
 /* ── SUPABASE CONFIG SYNC ── */
-var SB_CONFIG_KEY="app-config-v12.json";
+var SB_CONFIG_KEY="app-config-v13.json";
 var SB_DL_KEY="download-counts.json";
 
 function sbLoadDlCounts(){
