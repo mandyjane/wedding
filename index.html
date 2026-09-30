@@ -150,6 +150,7 @@ function SeatSearch(props){
 var DEFAULT_MENU=[
   {section:"Cocktail Hour",courses:[{name:"CANAP\u00c9S",dish:"Chef\u2019s Selection",desc:"of three (3) canap\u00e9s"}]},
   {section:"Dinner Menu",courses:[
+    {name:"TO SHARE",dish:"Artisan Sourdough",desc:"with cultured butter"},
     {name:"ENTR\u00c9E",dish:"Borrowdale Pork Belly",desc:"roasted apple ketchup, fioretto [df, gf]"},
     {name:"",dish:"Hiramasa Kingfish Crudo",desc:"tamari-sesame dressing, avocado [df, gf]"},
     {name:"MAIN",dish:"Inglewood Organic Farm Chicken",desc:"corn puree, roasted baby gem, mustard jus [gf, df]"},
@@ -455,7 +456,7 @@ function sbDeletePhoto(name){
 }
 
 /* ── SUPABASE CONFIG SYNC ── */
-var SB_CONFIG_KEY="app-config-v10.json";
+var SB_CONFIG_KEY="app-config-v11.json";
 var SB_DL_KEY="download-counts.json";
 
 function sbLoadDlCounts(){
