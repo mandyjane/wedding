@@ -44,11 +44,26 @@ var IMG_W=1100,IMG_H=1400;
 <script type="text/javascript">
 var useState=React.useState,useEffect=React.useEffect;
 
-const S={
+var CONTRAST_THEMES={
+  default:{primary:"#5a7d62",sage:"#80b090",text:"#2c2c2c",descAlpha:"77",detailAlpha:"66",tabUnsel:"aa",altDrop:"55"},
+  subtle:{primary:"#3a5a42",sage:"#5a7d62",text:"#2c2c2c",descAlpha:"99",detailAlpha:"99",tabUnsel:"cc",altDrop:"88"},
+  medium:{primary:"#2c4a34",sage:"#4a6a52",text:"#2c2c2c",descAlpha:"bb",detailAlpha:"bb",tabUnsel:"dd",altDrop:"88"},
+  high:{primary:"#1a3a22",sage:"#3a5a42",text:"#2c2c2c",descAlpha:"dd",detailAlpha:"dd",tabUnsel:"ee",altDrop:"aa"},
+};
+
+var S={
   primary:"#5a7d62",sage:"#80b090",text:"#2c2c2c",
+  descAlpha:"77",detailAlpha:"66",tabUnsel:"aa",altDrop:"55",
   spaced:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase"},
   sans:{fontFamily:"'DM Sans',sans-serif"},
 };
+
+function applyContrast(theme){
+  var t=CONTRAST_THEMES[theme]||CONTRAST_THEMES["default"];
+  S.primary=t.primary;S.sage=t.sage;S.text=t.text;
+  S.descAlpha=t.descAlpha;S.detailAlpha=t.detailAlpha;
+  S.tabUnsel=t.tabUnsel;S.altDrop=t.altDrop;
+}
 
 function Tabs({tabs,active,onChange}){
   return React.createElement("div",{style:{display:"flex",border:"1px solid #e0ebe3",margin:"0 auto",maxWidth:440}},
@@ -56,7 +71,7 @@ function Tabs({tabs,active,onChange}){
       flex:1,padding:"11px 0",border:"none",cursor:"pointer",
       ...S.spaced,fontSize:9,letterSpacing:"0.05em",fontWeight:active===t.id?600:500,
       background:active===t.id?"#f0f6f1":"transparent",
-      color:active===t.id?S.primary:S.text+"aa",
+      color:active===t.id?S.primary:S.text+S.tabUnsel,
       transition:"all 0.2s",borderBottom:active===t.id?"2px solid "+S.sage:"2px solid transparent",
     }},t.label))
   );
@@ -89,7 +104,7 @@ function SeatSearch(props){
         style:{width:"100%",padding:"14px 40px 14px 16px",border:"1px solid #d5e3d9",fontSize:15,...S.sans,background:"#fff",color:S.text,boxSizing:"border-box"}
       }),
       query&&React.createElement("button",{onClick:function(){doSearch("");},
-        style:{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",padding:4,color:S.text+"66",fontSize:18,lineHeight:1,WebkitTapHighlightColor:"transparent"}},"\u00d7")
+        style:{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",padding:4,color:S.text+S.detailAlpha,fontSize:18,lineHeight:1,WebkitTapHighlightColor:"transparent"}},"\u00d7")
     ),
 
     /* Multiple matches — tap to select */
@@ -98,7 +113,7 @@ function SeatSearch(props){
     }},
       React.createElement("div",{style:{...S.spaced,fontSize:10,color:S.sage,marginBottom:6}},
         "WE FOUND "+matches.length+" MATCHES"),
-      React.createElement("div",{style:{...S.sans,fontSize:12,color:S.text+"77",marginBottom:12}},
+      React.createElement("div",{style:{...S.sans,fontSize:12,color:S.text+S.descAlpha,marginBottom:12}},
         "Tap your name below"),
       React.createElement("div",{style:{border:"1px solid #e0ebe3"}},
         matches.map((g,i)=>React.createElement("button",{key:i,onClick:()=>setSelected(g),style:{
@@ -180,9 +195,9 @@ function MenuView(props){
         var hasAlt=c.name&&nextItem&&!nextItem.name;
         return React.createElement("div",{key:ci,style:{marginBottom:c.name?12:14,marginTop:c.name&&ci>0?32:4,textAlign:"center"}},
         c.name&&React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:hasAlt?4:12,fontWeight:600}},c.name),
-        hasAlt&&React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:S.sage+"55",fontStyle:"italic",marginBottom:12}},"alternate drop"),
+        hasAlt&&React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:S.sage+S.altDrop,fontStyle:"italic",marginBottom:12}},"alternate drop"),
         React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:18,fontWeight:500,color:S.primary,marginBottom:2}},c.dish),
-        React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",fontStyle:"italic"}},
+        React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+S.descAlpha,fontStyle:"italic"}},
           c.desc.indexOf("\n")>-1?c.desc.split("\n").map(function(line,li){return React.createElement("div",{key:li,style:{marginBottom:li<c.desc.split("\n").length-1?2:0}},line);}):c.desc)
       )})
     );})
@@ -214,7 +229,7 @@ function BeveragesView(props){
       }},item);})
     );}),
     React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"8px auto 20px",opacity:0.3}}),
-    bev.notes.map(function(n,ni){return React.createElement("div",{key:ni,style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"66",textAlign:"center",lineHeight:1.6,maxWidth:360,margin:(ni>0?"10px":"0")+" auto 0"}},n);})
+    bev.notes.map(function(n,ni){return React.createElement("div",{key:ni,style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+S.detailAlpha,textAlign:"center",lineHeight:1.6,maxWidth:360,margin:(ni>0?"10px":"0")+" auto 0"}},n);})
   );
 }
 
@@ -233,7 +248,7 @@ function TimelineView(props){
         React.createElement("div",{style:{width:7,height:7,borderRadius:"50%",border:"1.5px solid "+S.sage,background:"#fff",flexShrink:0,marginTop:6,zIndex:1,marginLeft:-9}}),
         React.createElement("div",{style:{paddingTop:0}},
           React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:15,fontWeight:500,color:S.primary,lineHeight:1.3}},e.event),
-          e.detail&&React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"66",marginTop:3,lineHeight:1.4}},e.detail)
+          e.detail&&React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+S.detailAlpha,marginTop:3,lineHeight:1.4}},e.detail)
         )
       )})
     ),
@@ -259,16 +274,6 @@ function TimelineView(props){
             React.createElement("path",{d:"M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"})),
           "zanetaylormusic.com.au")),
       React.createElement("div",{style:{marginTop:24}}),
-      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:6,fontWeight:600}},"PHOTOGRAPHER"),
-      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:500,color:S.primary,marginBottom:10}},"Jordan Leef"),
-      React.createElement("a",{href:"https://www.instagram.com/jordan_leef_photography/",target:"_blank",rel:"noopener noreferrer",
-        style:{textDecoration:"none",display:"inline-flex",alignItems:"center",gap:5,color:S.sage,fontFamily:"'DM Sans',sans-serif",fontSize:11}},
-        React.createElement("svg",{width:14,height:14,viewBox:"0 0 24 24",fill:"none",stroke:S.sage,strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
-          React.createElement("rect",{x:2,y:2,width:20,height:20,rx:5}),
-          React.createElement("circle",{cx:12,cy:12,r:5}),
-          React.createElement("circle",{cx:17.5,cy:6.5,r:1.5,fill:S.sage,stroke:"none"})),
-        "@jordan_leef_photography"),
-      React.createElement("div",{style:{marginTop:24}}),
       React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:6,fontWeight:600}},"CELEBRANT / MC"),
       React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:500,color:S.primary,marginBottom:10}},"Benjamin Barruel"),
       React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",gap:6}},
@@ -285,7 +290,17 @@ function TimelineView(props){
             React.createElement("circle",{cx:12,cy:12,r:10}),
             React.createElement("line",{x1:2,y1:12,x2:22,y2:12}),
             React.createElement("path",{d:"M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"})),
-          "storylineceremonies.com.au"))
+          "storylineceremonies.com.au")),
+      React.createElement("div",{style:{marginTop:24}}),
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.18em",textTransform:"uppercase",fontSize:10,color:S.sage,marginBottom:6,fontWeight:600}},"PHOTOGRAPHER"),
+      React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:500,color:S.primary,marginBottom:10}},"Jordan Leef"),
+      React.createElement("a",{href:"https://www.instagram.com/jordan_leef_photography/",target:"_blank",rel:"noopener noreferrer",
+        style:{textDecoration:"none",display:"inline-flex",alignItems:"center",gap:5,color:S.sage,fontFamily:"'DM Sans',sans-serif",fontSize:11}},
+        React.createElement("svg",{width:14,height:14,viewBox:"0 0 24 24",fill:"none",stroke:S.sage,strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
+          React.createElement("rect",{x:2,y:2,width:20,height:20,rx:5}),
+          React.createElement("circle",{cx:12,cy:12,r:5}),
+          React.createElement("circle",{cx:17.5,cy:6.5,r:1.5,fill:S.sage,stroke:"none"})),
+        "@jordan_leef_photography")
     )
   );
 }
@@ -506,7 +521,7 @@ function sbDeletePhoto(name){
 }
 
 /* ── SUPABASE CONFIG SYNC ── */
-var SB_CONFIG_KEY="app-config-v14.json";
+var SB_CONFIG_KEY="app-config-v15.json";
 var SB_DL_KEY="download-counts.json";
 
 function sbLoadDlCounts(){
@@ -610,7 +625,7 @@ function PhotosView(){
     React.createElement("div",{style:{textAlign:"center",marginBottom:24}},
       React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:500}},"Share Your Photos"),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}}),
-      React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"77",marginTop:8}},"Capture the moment and share with everyone")
+      React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+S.descAlpha,marginTop:8}},"Capture the moment and share with everyone")
     ),
 
     React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10,marginBottom:24}},
@@ -782,7 +797,7 @@ function AdminPhotos(props){
       var limitLabel=props.proStorage?"100 GB":"1 GB";
       var barColor=pct>90?"#c55":pct>70?"#c90":S.sage;
       return React.createElement("div",{style:{marginBottom:16}},
-        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",fontFamily:"'DM Sans',sans-serif",fontSize:11,color:S.text+"77",marginBottom:4}},
+        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",fontFamily:"'DM Sans',sans-serif",fontSize:11,color:S.text+S.descAlpha,marginBottom:4}},
           React.createElement("span",null,usedMB+" used"),
           React.createElement("span",null,limitLabel+" limit"),
         ),
@@ -829,6 +844,7 @@ function App(){
   var[useAltBot,setUseAltBot]=useState(true);
   var[useAltTop,setUseAltTop]=useState(true);
   var[proStorage,setProStorage]=useState(false);
+  var[contrast,setContrast]=useState("default");
   var[tab,setTab]=useState("timeline");
   var[mode,setMode]=useState("guest");
   var[adminTab,setAdminTab]=useState("guests");
@@ -874,14 +890,17 @@ function App(){
       if(typeof p.useAltBot!=="undefined")setUseAltBot(p.useAltBot);
       if(typeof p.useAltTop!=="undefined")setUseAltTop(p.useAltTop);
       if(typeof p.proStorage!=="undefined")setProStorage(p.proStorage);
+      if(p.contrast)setContrast(p.contrast);
       setConfigLoaded(true);
     }).catch(function(){setConfigLoaded(true);});
   },[]);
 
   function saveConfig(newData){
-    var data=Object.assign({guests:guests,timeline:timeline,menuData:menuData,bevData:bevData,useAltBot:useAltBot,useAltTop:useAltTop,proStorage:proStorage},newData||{});
+    var data=Object.assign({guests:guests,timeline:timeline,menuData:menuData,bevData:bevData,useAltBot:useAltBot,useAltTop:useAltTop,proStorage:proStorage,contrast:contrast},newData||{});
     sbSaveConfig(data).catch(function(e){alert("Save failed. Check your connection and try again.");});
   }
+
+  applyContrast(contrast);
 
   var ist={padding:"10px 14px",border:"1px solid #d5e3d9",fontSize:14,fontFamily:"'DM Sans',sans-serif",background:"#fff",width:"100%",boxSizing:"border-box"};
 
@@ -1058,6 +1077,20 @@ function App(){
                 React.createElement("img",{src:BOT_IMG_ALT,alt:"Metcalf",style:{width:"100%",maxWidth:140,display:"block",margin:"0 auto"}}),
                 React.createElement("p",{style:{fontSize:11,marginTop:6,color:useAltBot?S.primary:S.text+"77"}},"Metcalf")
               )
+            )
+          ),
+          React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.text,marginTop:24}},
+            React.createElement("p",{style:{marginBottom:10,fontWeight:500}},"Text contrast"),
+            React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}},
+              ["default","subtle","medium","high"].map(function(opt){
+                var labels={default:"Default",subtle:"Subtle Boost",medium:"Medium Boost",high:"High Contrast"};
+                var previews={default:"#5a7d62",subtle:"#3a5a42",medium:"#2c4a34",high:"#1a3a22"};
+                return React.createElement("div",{key:opt,onClick:function(){setContrast(opt);},
+                  style:{border:contrast===opt?"2px solid "+S.primary:"1px solid #d5e3d9",padding:10,cursor:"pointer",textAlign:"center"}},
+                  React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:14,fontWeight:500,color:previews[opt],marginBottom:4}},labels[opt]),
+                  React.createElement("div",{style:{fontSize:10,color:previews[opt]+"88"}},"Sample text")
+                );
+              })
             )
           ),
           React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.text,marginTop:24}},
