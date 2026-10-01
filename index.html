@@ -430,9 +430,7 @@ function FloorplanView(props){
     ),
     React.createElement(ZoomableImage,{src:props.fpStyle==="elegant"?FP_IMG_ELEGANT:props.fpStyle==="nonames"?FP_IMG_NONAMES:FP_IMG,alt:"Seating plan",highlight:coords,fpStyle:props.fpStyle||"names"}),
     props.onPick&&React.createElement("div",{style:{marginTop:24}},
-      linkPicker("VIEW PLAN AS",[{id:"elegant",label:"Elegant"},{id:"names",label:"With Names"},{id:"nonames",label:"Initials"}],props.fpStyle,props.onPick),
-      props.chosen&&React.createElement("button",{onClick:props.onReset,
-        style:{display:"block",margin:"10px auto 0",background:"none",border:"none",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.sage,textDecoration:"underline"}},"Reset to default"))
+      linkPicker("VIEW PLAN AS",[{id:"elegant",label:"Elegant"},{id:"names",label:"With Names"},{id:"nonames",label:"Initials"}],props.fpStyle,props.onPick))
   );
 }
 
