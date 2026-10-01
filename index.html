@@ -430,7 +430,7 @@ function FloorplanView(props){
     ),
     React.createElement(ZoomableImage,{src:props.fpStyle==="elegant"?FP_IMG_ELEGANT:props.fpStyle==="nonames"?FP_IMG_NONAMES:FP_IMG,alt:"Seating plan",highlight:coords,fpStyle:props.fpStyle||"names"}),
     props.onPick&&React.createElement("div",{style:{marginTop:24}},
-      linkPicker("VIEW PLAN AS",[{id:"elegant",label:"Elegant"},{id:"names",label:"With Names"},{id:"nonames",label:"Initials"}],props.fpStyle,props.onPick))
+      linkPicker("VIEW PLAN AS",[{id:"elegant",label:"Elegant"},{id:"names",label:"Simple"}],props.fpStyle,props.onPick))
   );
 }
 
@@ -1060,7 +1060,7 @@ function App(){
     sbSaveConfig(data).catch(function(e){alert("Save failed. Check your connection and try again.");});
   }
 
-  var viewFp=(mode!=="admin"&&guestFp&&{names:1,nonames:1,elegant:1}[guestFp])?guestFp:fpStyle;
+  var viewFp=(mode!=="admin"&&guestFp&&{names:1,elegant:1}[guestFp])?guestFp:fpStyle;
   var viewCt=(mode!=="admin"&&guestCt&&CONTRAST_THEMES[guestCt])?guestCt:contrast;
   if(viewCt==="medium")viewCt="high";
   applyContrast(viewCt);
