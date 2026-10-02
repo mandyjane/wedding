@@ -687,8 +687,8 @@ function SlidePhoto(props){
   },[props.photo.name]);
   var isVideo=/\.(mp4|mov|webm|avi)$/i.test(props.photo.name);
   return React.createElement("div",{ref:ref,onClick:function(e){e.stopPropagation();},style:{position:"relative",maxWidth:"85vw",display:"flex"}},
-    isVideo?React.createElement("video",{src:props.photo.url,controls:true,autoPlay:true,style:{maxWidth:"100%",maxHeight:"calc(100dvh - 150px)"}}):
-    React.createElement("img",{src:props.photo.url,alt:"Wedding photo",style:{maxWidth:"100%",maxHeight:"calc(100dvh - 150px)",objectFit:"contain",display:"block"}}),
+    isVideo?React.createElement("video",{src:props.photo.url,controls:true,autoPlay:true,style:{maxWidth:"100%",maxHeight:"calc(100dvh - 198px)"}}):
+    React.createElement("img",{src:props.photo.url,alt:"Wedding photo",style:{maxWidth:"100%",maxHeight:"calc(100dvh - 198px)",objectFit:"contain",display:"block"}}),
     !isVideo&&!props.isAdmin&&React.createElement("img",{src:WATERMARK,alt:"",style:{position:"absolute",bottom:8,right:8,width:"20%",opacity:0.8,pointerEvents:"none"}})
   );
 }
@@ -866,7 +866,7 @@ function PhotosView(){
               React.createElement("line",{x1:12,y1:16,x2:12,y2:4})),
             "SAVE")
         );})(),
-      React.createElement("div",{style:{position:"absolute",top:16,bottom:122,left:0,right:0,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none"}},
+      React.createElement("div",{style:{position:"absolute",top:64,bottom:122,left:0,right:0,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none"}},
         React.createElement("div",{style:{pointerEvents:"auto",display:"flex",justifyContent:"center"}},
           React.createElement(SlidePhoto,{key:viewPhoto.name,photo:viewPhoto,dir:slideDir.current})))
     )
@@ -1126,7 +1126,6 @@ function App(){
         )
       ),
       React.createElement(SeatSearch,{showOnPlan:showOnPlan}),
-      React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"8px auto 20px",opacity:0.35}}),
       React.createElement("div",{style:{padding:"0 24px",marginBottom:0}},
         React.createElement(Tabs,{tabs:tabs,active:tab,onChange:function(t){setTab(t);if(t!=="seatingplan")setHighlightGuest(null);}})),
       tab==="menu"&&React.createElement(MenuView,{data:menuData}),
