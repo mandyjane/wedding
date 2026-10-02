@@ -234,7 +234,7 @@ function SeatSearch(props){
 var DEFAULT_MENU=[
   {section:"Cocktail Hour",courses:[{name:"CANAP\u00c9S",dish:"Chef\u2019s Selection",desc:"of three (3) canap\u00e9s"}]},
   {section:"Dinner Menu",courses:[
-    {name:"TO SHARE",dish:"Artisan Sourdough",desc:"with cultured butter"},
+    {name:"TO BEGIN",dish:"Artisan Sourdough",desc:"with cultured butter"},
     {name:"ENTR\u00c9E",dish:"Borrowdale Pork Belly",desc:"roasted apple ketchup, fioretto [df, gf]"},
     {name:"",dish:"Hiramasa Kingfish Crudo",desc:"tamari-sesame dressing, avocado [df, gf]"},
     {name:"MAIN",dish:"Inglewood Organic Farm Chicken",desc:"corn puree, roasted baby gem, mustard jus [gf, df]"},
@@ -424,9 +424,9 @@ function FloorplanView(props){
     React.createElement("div",{style:{textAlign:"center",marginBottom:20}},
       React.createElement("div",{style:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,color:S.primary,fontStyle:"italic",fontWeight:500}},"Seating Plan"),
       React.createElement("div",{style:{width:36,height:1,background:S.sage,margin:"12px auto",opacity:0.4}}),
-      guest&&coords?React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.sage,marginTop:8}},
-        guest.name+" \u2014 "+(guest.table==="Bridal"?"Bridal Table":"Table "+guest.table))
-      :React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"55",marginTop:8}},"Pinch to zoom or double-tap")
+      guest&&coords&&React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:S.sage,marginTop:8}},
+        guest.name+" \u2014 "+(guest.table==="Bridal"?"Bridal Table":"Table "+guest.table)),
+      React.createElement("div",{style:{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:S.text+"55",marginTop:guest&&coords?4:8}},"Pinch to zoom or double-tap")
     ),
     React.createElement(ZoomableImage,{src:props.fpStyle==="elegant"?FP_IMG_ELEGANT:props.fpStyle==="nonames"?FP_IMG_NONAMES:FP_IMG,alt:"Seating plan",highlight:coords,fpStyle:props.fpStyle||"names"}),
     props.onPick&&React.createElement("div",{style:{marginTop:24}},
@@ -1043,7 +1043,11 @@ function App(){
     sbLoadConfig().then(function(p){
       if(p.guests)setGuests(p.guests);
       if(p.timeline)setTimeline(p.timeline);
-      if(p.menuData)setMenuData(p.menuData);
+      if(p.menuData){
+        /* one-off rename of the old "TO SHARE" heading in saved menus */
+        setMenuData(p.menuData.map(function(sec){return Object.assign({},sec,{courses:(sec.courses||[]).map(function(c){
+          return c&&typeof c.name==="string"&&c.name.trim().toUpperCase()==="TO SHARE"?Object.assign({},c,{name:"TO BEGIN"}):c;})});}));
+      }
       if(p.bevData)setBevData(p.bevData);
       if(typeof p.useAltBot!=="undefined")setUseAltBot(p.useAltBot);
       if(typeof p.useAltTop!=="undefined")setUseAltTop(p.useAltTop);
