@@ -1078,7 +1078,7 @@ function App(){
   function pickGuestFp(v){lsSet(GUEST_FP_KEY,v);setGuestFp(v);}
   function resetGuestFp(){try{localStorage.removeItem(GUEST_FP_KEY);}catch(e){}setGuestFp("");}
   function pickGuestCt(v){lsSet(GUEST_CT_KEY,v);setGuestCt(v);}
-  var[tab,setTab]=useState("timeline");
+  var[tab,setTab]=useState("photos");
   var[mode,setMode]=useState("guest");
   var[adminTab,setAdminTab]=useState("settings");
   var[pin,setPin]=useState("");
