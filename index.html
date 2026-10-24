@@ -746,6 +746,10 @@ function PhotosView(props){
   var[nameDraft,setNameDraft]=useState(lsGet(UPLOADER_KEY)||lsGet(SEARCHED_KEY));
   function saveName(){var n=nameDraft.trim().replace(/\s+/g," ");if(n.length<2)return;lsSet(UPLOADER_KEY,n);setUploaderState(n);setEditingName(false);}
   var needName=!uploader;
+  function promptName(){
+    setEditingName(true);
+    setTimeout(function(){var el=document.getElementById("uploaderNameInput");if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.focus({preventScroll:true});}},60);
+  }
   var[hearts,setHearts]=useState({});
   var[hearted,setHearted]=useState(getHearted());
   var[showMine,setShowMine]=useState(false);
@@ -821,19 +825,19 @@ function PhotosView(props){
       React.createElement("input",{ref:uploadRef,type:"file",accept:"image/*,video/*",multiple:true,
         style:{display:"none"},onChange:function(e){handleFiles(e.target.files);e.target.value="";}}),
 
-      !hideCamera&&React.createElement("button",{onClick:function(){cameraRef.current.click();},disabled:uploading||needName,
+      !hideCamera&&React.createElement("button",{onClick:function(){if(needName){promptName();return;}cameraRef.current.click();},disabled:uploading,
         style:{padding:"14px",background:S.primary,color:"#fff",border:"none",
           fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:"0.14em",cursor:"pointer",
-          opacity:uploading||needName?0.5:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
+          opacity:uploading?0.5:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
         React.createElement("svg",{width:18,height:18,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
           React.createElement("path",{d:"M5 7h1a2 2 0 0 0 2-2 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2"}),
           React.createElement("circle",{cx:12,cy:13,r:3})),
         "TAKE PHOTO"),
 
-      React.createElement("button",{onClick:function(){uploadRef.current.click();},disabled:uploading||needName,
+      React.createElement("button",{onClick:function(){if(needName){promptName();return;}uploadRef.current.click();},disabled:uploading,
         style:{padding:"14px",background:"#fff",color:S.primary,border:"1px solid "+S.primary,
           fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:"0.14em",cursor:"pointer",
-          opacity:uploading||needName?0.5:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
+          opacity:uploading?0.5:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
         React.createElement("svg",{width:18,height:18,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round",strokeLinejoin:"round"},
           React.createElement("path",{d:"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"}),
           React.createElement("polyline",{points:"7 9 12 4 17 9"}),
